@@ -1,40 +1,157 @@
 {% extends 'base.html' %}
+{% load humanize %}
 {% load static %}
 
 {% block title %}TrueCar - Buy New & Used Cars Online{% endblock %}
 
 {% block extra_css %}
 <style>
+    :root {
+        --primary-color: #1a1a1a;
+        --primary-hover: #333333;
+        --secondary-color: #6c757d;
+        --accent-color: #0056b3;
+        --accent-hover: #004085;
+        --light-gray: #f8f9fa;
+        --border-color: #e0e0e0;
+        --white: #ffffff;
+        --success: #28a745;
+        --warning: #ffc107;
+        --danger: #dc3545;
+        --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: var(--white);
+        font-family: var(--font-family);
+        color: var(--primary-color);
+        line-height: 1.5;
+    }
+
+    /* Search Bar */
+    .search-section {
+        background: var(--primary-color);
+        padding: 40px 20px;
+    }
+
+    .search-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .search-header {
+        text-align: center;
+        margin-bottom: 30px;
+        color: var(--white);
+    }
+
+    .search-header h1 {
+        font-size: 36px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .search-header p {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .search-form {
+        background: var(--white);
+        padding: 30px;
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--primary-color);
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-size: 14px;
+        font-family: var(--font-family);
+        background: var(--white);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+    }
+
+    .search-btn {
+        width: 100%;
+        padding: 14px;
+        background: var(--primary-color);
+        color: var(--white);
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+        font-family: var(--font-family);
+    }
+
+    .search-btn:hover {
+        background: var(--primary-hover);
+    }
+
     /* Hero Section */
     .hero-section {
         position: relative;
-        height: 600px;
+        height: 500px;
         background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
                     url('https://images.unsplash.com/photo-1542282088-fe8426682b8f?w=1920') center/cover;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
+        color: var(--white);
         text-align: center;
     }
 
     .hero-content {
         max-width: 800px;
-        padding: 0 10px;
+        padding: 0 20px;
     }
 
     .hero-content h1 {
-        font-size: 56px;
-        font-weight: 700;
+        font-size: 48px;
+        font-weight: 600;
         margin-bottom: 16px;
         line-height: 1.2;
-        letter-spacing: -1px;
     }
 
     .hero-content p {
-        font-size: 20px;
-        margin-bottom: 48px;
-        color: rgba(255, 255, 255, 0.95);
+        font-size: 18px;
+        margin-bottom: 40px;
+        color: rgba(255, 255, 255, 0.9);
     }
 
     /* Quick Actions */
@@ -53,14 +170,14 @@
         cursor: pointer;
         transition: all 0.2s;
         text-decoration: none;
-        color: var(--dark-color);
+        color: var(--primary-color);
         border: 1px solid transparent;
+        border-radius: 4px;
     }
 
     .action-card:hover {
-        background: white;
+        background: var(--white);
         border-color: var(--primary-color);
-        transform: translateY(-2px);
     }
 
     .action-card i {
@@ -73,12 +190,12 @@
     .action-card span {
         display: block;
         font-size: 14px;
-        font-weight: 600;
+        font-weight: 500;
     }
 
-    /* Info Section */
-    .info-section {
-        background: white;
+    /* Featured Cars Section */
+    .featured-section {
+        background: var(--white);
         padding: 80px 20px;
     }
 
@@ -89,29 +206,210 @@
 
     .section-header {
         text-align: center;
-        margin-bottom: 64px;
+        margin-bottom: 50px;
     }
 
     .section-header h2 {
         font-size: 36px;
-        font-weight: 700;
-        color: var(--dark-color);
+        font-weight: 600;
+        color: var(--primary-color);
         margin-bottom: 16px;
-        letter-spacing: -0.5px;
     }
 
     .section-header p {
-        font-size: 18px;
-        color: #64748b;
-        max-width: 700px;
+        font-size: 16px;
+        color: var(--secondary-color);
+        max-width: 600px;
         margin: 0 auto;
     }
 
-    /* Features Grid */
-    .features-grid {
+    .cars-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 48px;
+        gap: 24px;
+        margin-bottom: 40px;
+    }
+
+    .car-card {
+        background: var(--white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        overflow: hidden;
+        transition: all 0.2s;
+    }
+
+    .car-card:hover {
+        border-color: var(--primary-color);
+    }
+
+    .car-image {
+        position: relative;
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        background: var(--light-gray);
+    }
+
+    .car-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+    }
+
+    .car-card:hover .car-image img {
+        transform: scale(1.03);
+    }
+
+    .car-badges {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        z-index: 2;
+    }
+
+    .badge {
+        padding: 4px 10px;
+        border-radius: 2px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        display: inline-block;
+    }
+
+    .badge-featured {
+        background: var(--danger);
+        color: var(--white);
+    }
+
+    .badge-new {
+        background: var(--success);
+        color: var(--white);
+    }
+
+    .car-content {
+        padding: 20px;
+    }
+
+    .car-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: var(--primary-color);
+        margin-bottom: 8px;
+        line-height: 1.4;
+    }
+
+    .car-price {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 12px;
+    }
+
+    .car-specs {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 12px;
+        font-size: 13px;
+        color: var(--secondary-color);
+    }
+
+    .spec-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .car-location {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 13px;
+        color: var(--secondary-color);
+        margin-bottom: 15px;
+    }
+
+    .car-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 15px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .seller-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--secondary-color);
+    }
+
+    .seller-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 2px;
+        background: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .view-btn {
+        padding: 6px 14px;
+        background: var(--primary-color);
+        color: var(--white);
+        text-decoration: none;
+        border-radius: 2px;
+        font-size: 13px;
+        font-weight: 500;
+        transition: background 0.2s;
+    }
+
+    .view-btn:hover {
+        background: var(--primary-hover);
+        color: var(--white);
+    }
+
+    .section-actions {
+        text-align: center;
+    }
+
+    .btn-outline {
+        padding: 12px 32px;
+        background: transparent;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        border-radius: 4px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-outline:hover {
+        background: var(--primary-color);
+        color: var(--white);
+    }
+
+    /* How It Works */
+    .info-section {
+        background: var(--light-gray);
+        padding: 80px 20px;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 40px;
     }
 
     .feature-item {
@@ -121,12 +419,13 @@
     .feature-icon {
         width: 80px;
         height: 80px;
-        background: var(--light-bg);
+        background: var(--white);
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 24px;
         border: 1px solid var(--border-color);
+        border-radius: 4px;
     }
 
     .feature-icon i {
@@ -136,20 +435,20 @@
 
     .feature-item h3 {
         font-size: 20px;
-        font-weight: 600;
+        font-weight: 500;
         margin-bottom: 12px;
-        color: var(--dark-color);
+        color: var(--primary-color);
     }
 
     .feature-item p {
-        color: #64748b;
+        color: var(--secondary-color);
         font-size: 15px;
         line-height: 1.6;
     }
 
     /* Calculator Section */
     .calculator-section {
-        background: var(--light-bg);
+        background: var(--white);
         padding: 80px 20px;
     }
 
@@ -158,48 +457,49 @@
         margin: 0 auto;
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 64px;
+        gap: 60px;
         align-items: center;
     }
 
     .calculator-info h2 {
         font-size: 36px;
-        font-weight: 700;
-        color: var(--dark-color);
+        font-weight: 600;
+        color: var(--primary-color);
         margin-bottom: 24px;
-        letter-spacing: -0.5px;
     }
 
     .calculator-info p {
         font-size: 16px;
-        color: #64748b;
+        color: var(--secondary-color);
         margin-bottom: 16px;
         line-height: 1.6;
     }
 
     .calculator-card {
-        background: white;
-        padding: 40px;
+        background: var(--white);
+        padding: 30px;
         border: 1px solid var(--border-color);
+        border-radius: 4px;
     }
 
     .price-display {
         text-align: center;
-        margin-bottom: 32px;
-        padding: 32px;
-        background: var(--light-bg);
+        margin-bottom: 30px;
+        padding: 30px;
+        background: var(--light-gray);
         border: 1px solid var(--border-color);
+        border-radius: 4px;
     }
 
     .price-display .amount {
-        font-size: 48px;
-        font-weight: 700;
+        font-size: 42px;
+        font-weight: 600;
         color: var(--primary-color);
         margin-bottom: 8px;
     }
 
     .price-display .label {
-        color: #64748b;
+        color: var(--secondary-color);
         font-size: 14px;
         font-weight: 500;
     }
@@ -213,17 +513,18 @@
         margin-bottom: 8px;
         font-size: 14px;
         font-weight: 500;
-        color: var(--dark-color);
+        color: var(--primary-color);
     }
 
     .form-field input,
     .form-field select {
         width: 100%;
-        padding: 12px 16px;
+        padding: 12px;
         border: 1px solid var(--border-color);
-        font-size: 15px;
-        background: white;
-        transition: border-color 0.2s;
+        border-radius: 4px;
+        font-size: 14px;
+        background: var(--white);
+        font-family: var(--font-family);
     }
 
     .form-field input:focus,
@@ -241,40 +542,42 @@
     .calculate-btn {
         width: 100%;
         background: var(--primary-color);
-        color: white;
-        padding: 16px;
+        color: var(--white);
+        padding: 14px;
         border: none;
+        border-radius: 4px;
         font-size: 16px;
-        font-weight: 600;
+        font-weight: 500;
         cursor: pointer;
         margin-top: 24px;
         transition: background 0.2s;
+        font-family: var(--font-family);
     }
 
     .calculate-btn:hover {
-        background: var(--secondary-color);
+        background: var(--primary-hover);
     }
 
     /* Stats Section */
     .stats-section {
-        background: var(--dark-color);
-        color: white;
-        padding: 64px 20px;
+        background: var(--primary-color);
+        color: var(--white);
+        padding: 60px 20px;
     }
 
     .stats-grid {
         max-width: 1200px;
         margin: 0 auto;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 48px;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
         text-align: center;
     }
 
     .stat-item h3 {
-        font-size: 48px;
-        font-weight: 700;
-        color: var(--primary-color);
+        font-size: 42px;
+        font-weight: 600;
+        color: var(--white);
         margin-bottom: 8px;
     }
 
@@ -283,9 +586,9 @@
         color: rgba(255, 255, 255, 0.8);
     }
 
-    /* Brands Section */
+    /* Popular Brands */
     .brands-section {
-        background: white;
+        background: var(--white);
         padding: 80px 20px;
     }
 
@@ -294,57 +597,58 @@
         grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
         gap: 16px;
         max-width: 1200px;
-        margin: 48px auto 0;
+        margin: 50px auto 0;
     }
 
     .brand-card {
-        background: white;
+        background: var(--white);
         border: 1px solid var(--border-color);
-        padding: 32px 20px;
+        padding: 30px 20px;
         text-align: center;
         cursor: pointer;
         transition: all 0.2s;
         text-decoration: none;
-        color: var(--dark-color);
+        color: var(--primary-color);
+        border-radius: 4px;
     }
 
     .brand-card:hover {
         border-color: var(--primary-color);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .brand-card .brand-name {
         font-size: 16px;
-        font-weight: 600;
+        font-weight: 500;
         margin-bottom: 4px;
     }
 
     .brand-card small {
         font-size: 13px;
-        color: #64748b;
+        color: var(--secondary-color);
     }
 
     /* Body Style Section */
     .body-style-section {
-        background: var(--light-bg);
+        background: var(--light-gray);
         padding: 80px 20px;
     }
 
     .body-styles-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 16px;
         max-width: 1200px;
-        margin: 48px auto 0;
+        margin: 50px auto 0;
     }
 
     .body-style-card {
         position: relative;
-        height: 200px;
+        height: 180px;
         overflow: hidden;
         cursor: pointer;
         border: 1px solid var(--border-color);
         transition: all 0.2s;
+        border-radius: 4px;
     }
 
     .body-style-card:hover {
@@ -368,113 +672,27 @@
         left: 0;
         right: 0;
         background: linear-gradient(transparent, rgba(0,0,0,0.85));
-        padding: 24px;
-        color: white;
+        padding: 20px;
+        color: var(--white);
     }
 
     .body-style-name {
-        font-size: 18px;
-        font-weight: 600;
-    }
-
-    /* Reviews Section */
-    .reviews-section {
-        background: white;
-        padding: 80px 20px;
-    }
-
-    .reviews-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 24px;
-        max-width: 1200px;
-        margin: 48px auto 0;
-    }
-
-    .review-card {
-        background: white;
-        border: 1px solid var(--border-color);
-        overflow: hidden;
-        transition: all 0.2s;
-    }
-
-    .review-card:hover {
-        border-color: var(--primary-color);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
-
-    .review-image {
-        height: 220px;
-        background-size: cover;
-        background-position: center;
-    }
-
-    .review-content {
-        padding: 24px;
-    }
-
-    .review-car {
-        font-size: 18px;
-        font-weight: 700;
-        margin-bottom: 12px;
-        color: var(--dark-color);
-    }
-
-    .review-rating {
-        color: #f59e0b;
-        margin-bottom: 16px;
-    }
-
-    .review-text {
-        color: #64748b;
-        font-size: 15px;
-        line-height: 1.6;
-        margin-bottom: 20px;
-    }
-
-    .reviewer {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding-top: 20px;
-        border-top: 1px solid var(--border-color);
-    }
-
-    .reviewer img {
-        width: 40px;
-        height: 40px;
-        border: 1px solid var(--border-color);
-    }
-
-    .reviewer-info {
-        flex: 1;
-    }
-
-    .reviewer-name {
-        font-weight: 600;
-        font-size: 14px;
-        color: var(--dark-color);
-    }
-
-    .reviewer-title {
-        font-size: 12px;
-        color: #64748b;
-        margin-top: 2px;
+        font-size: 16px;
+        font-weight: 500;
     }
 
     /* CTA Section */
     .cta-section {
         background: var(--primary-color);
-        color: white;
+        color: var(--white);
         padding: 80px 20px;
         text-align: center;
     }
 
     .cta-section h2 {
-        font-size: 40px;
-        font-weight: 700;
+        font-size: 36px;
+        font-weight: 600;
         margin-bottom: 16px;
-        letter-spacing: -0.5px;
     }
 
     .cta-section p {
@@ -491,33 +709,37 @@
     }
 
     .btn-primary {
-        background: white;
+        background: var(--white);
         color: var(--primary-color);
-        padding: 16px 48px;
+        padding: 14px 40px;
         border: none;
+        border-radius: 4px;
         font-size: 16px;
-        font-weight: 600;
+        font-weight: 500;
         cursor: pointer;
         transition: all 0.2s;
         text-decoration: none;
         display: inline-block;
+        font-family: var(--font-family);
     }
 
     .btn-primary:hover {
-        background: var(--light-bg);
+        background: var(--light-gray);
     }
 
     .btn-secondary {
         background: transparent;
-        color: white;
-        padding: 16px 48px;
-        border: 2px solid white;
+        color: var(--white);
+        padding: 14px 40px;
+        border: 1px solid var(--white);
+        border-radius: 4px;
         font-size: 16px;
-        font-weight: 600;
+        font-weight: 500;
         cursor: pointer;
         transition: all 0.2s;
         text-decoration: none;
         display: inline-block;
+        font-family: var(--font-family);
     }
 
     .btn-secondary:hover {
@@ -526,9 +748,9 @@
 
     /* Footer */
     footer {
-        background: var(--dark-color);
-        color: white;
-        padding: 64px 20px 24px;
+        background: var(--primary-color);
+        color: var(--white);
+        padding: 60px 20px 24px;
     }
 
     .footer-content {
@@ -536,14 +758,14 @@
         margin: 0 auto;
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 48px;
-        margin-bottom: 48px;
+        gap: 40px;
+        margin-bottom: 40px;
     }
 
     .footer-section h4 {
         margin-bottom: 20px;
         font-size: 16px;
-        font-weight: 600;
+        font-weight: 500;
     }
 
     .footer-section ul {
@@ -556,14 +778,14 @@
     }
 
     .footer-section a {
-        color: #94a3b8;
+        color: rgba(255, 255, 255, 0.7);
         text-decoration: none;
         font-size: 14px;
         transition: color 0.2s;
     }
 
     .footer-section a:hover {
-        color: white;
+        color: var(--white);
     }
 
     .social-links {
@@ -573,39 +795,39 @@
     }
 
     .social-links a {
-        color: #94a3b8;
+        color: rgba(255, 255, 255, 0.7);
         font-size: 20px;
         transition: color 0.2s;
     }
 
     .social-links a:hover {
-        color: white;
+        color: var(--white);
     }
 
     .footer-bottom {
         border-top: 1px solid rgba(255, 255, 255, 0.1);
         padding-top: 24px;
         text-align: center;
-        color: #64748b;
+        color: rgba(255, 255, 255, 0.6);
         font-size: 13px;
         max-width: 1200px;
         margin: 0 auto;
     }
 
     .footer-bottom a {
-        color: #64748b;
+        color: rgba(255, 255, 255, 0.6);
         text-decoration: none;
     }
 
     .footer-bottom a:hover {
-        color: white;
+        color: var(--white);
     }
 
     /* Responsive */
     @media (max-width: 992px) {
         .calculator-container {
             grid-template-columns: 1fr;
-            gap: 48px;
+            gap: 40px;
         }
 
         .quick-actions {
@@ -614,6 +836,10 @@
     }
 
     @media (max-width: 768px) {
+        .search-header h1 {
+            font-size: 28px;
+        }
+
         .hero-content h1 {
             font-size: 36px;
         }
@@ -639,21 +865,142 @@
         }
 
         .cta-section h2 {
-            font-size: 32px;
+            font-size: 28px;
+        }
+
+        .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            width: 200px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .search-form {
+            padding: 20px;
+        }
+
+        .hero-section {
+            height: 400px;
+        }
+
+        .featured-section,
+        .info-section,
+        .calculator-section,
+        .brands-section,
+        .body-style-section {
+            padding: 60px 20px;
+        }
+
+        .cars-grid {
+            grid-template-columns: 1fr;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
+<!-- Search Section -->
+<section class="search-section">
+    <div class="search-container">
+        <div class="search-header">
+            <h1>Find Your Perfect Car</h1>
+            <p>Search from thousands of new and used vehicles</p>
+        </div>
+        
+        <form class="search-form" method="get" action="{% url 'car_listings' %}">
+            <div class="search-row">
+                <div class="form-group">
+                    <label>Make</label>
+                    <select name="make">
+                        <option value="">All Makes</option>
+                        {% for make in popular_makes %}
+                            <option value="{{ make.slug }}">{{ make.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Model</label>
+                    <select name="model">
+                        <option value="">All Models</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Body Type</label>
+                    <select name="body_type">
+                        <option value="">All Body Types</option>
+                        <option value="sedan">Sedan</option>
+                        <option value="suv">SUV</option>
+                        <option value="truck">Truck</option>
+                        <option value="coupe">Coupe</option>
+                        <option value="hatchback">Hatchback</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Price Range</label>
+                    <select name="price_range">
+                        <option value="">Any Price</option>
+                        <option value="0-10000">Under $10,000</option>
+                        <option value="10000-20000">$10,000 - $20,000</option>
+                        <option value="20000-30000">$20,000 - $30,000</option>
+                        <option value="30000-50000">$30,000 - $50,000</option>
+                        <option value="50000-100000">$50,000 - $100,000</option>
+                        <option value="100000-999999999">Over $100,000</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="search-row">
+                <div class="form-group">
+                    <label>Year</label>
+                    <select name="year">
+                        <option value="">Any Year</option>
+                        {% for year in year_range %}
+                            <option value="{{ year }}">{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Mileage</label>
+                    <select name="mileage">
+                        <option value="">Any Mileage</option>
+                        <option value="0-50000">Under 50,000</option>
+                        <option value="50000-100000">50,000 - 100,000</option>
+                        <option value="100000-150000">100,000 - 150,000</option>
+                        <option value="150000-999999999">Over 150,000</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" name="location" placeholder="City or ZIP code">
+                </div>
+                
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button type="submit" class="search-btn">Search Vehicles</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
 <!-- Hero Section -->
 <section class="hero-section">
     <div class="hero-content">
-        <h1>Find Your Perfect Car</h1>
-        <p>Transparent pricing. Trusted dealers. Delivered to your door.</p>
+        <h1>Drive Your Dream Car Today</h1>
+        <p>Transparent pricing, trusted dealers, and a seamless buying experience</p>
         
         <div class="quick-actions">
-            <a href="#" class="action-card">
+            <a href="{% url 'car_listings' %}" class="action-card">
                 <i class="bi bi-search"></i>
                 <span>Search Cars</span>
             </a>
@@ -663,7 +1010,7 @@
             </a>
             <a href="#" class="action-card">
                 <i class="bi bi-cash-coin"></i>
-                <span>Sell or Trade</span>
+                <span>Sell Your Car</span>
             </a>
             <a href="#" class="action-card">
                 <i class="bi bi-calculator"></i>
@@ -673,12 +1020,92 @@
     </div>
 </section>
 
+<!-- Featured Cars -->
+<section class="featured-section">
+    <div class="section-container">
+        <div class="section-header">
+            <h2>Featured Vehicles</h2>
+            <p>Discover our most popular and highly-rated cars</p>
+        </div>
+        
+        <div class="cars-grid">
+            {% for car in featured_cars %}
+            <div class="car-card">
+                <div class="car-image">
+                    {% if car.images.all %}
+                        <img src="{{ car.images.first.image.url }}" alt="{{ car.title }}">
+                    {% else %}
+                        <img src="{% static 'images/no-car-image.jpg' %}" alt="{{ car.title }}">
+                    {% endif %}
+                    
+                    <div class="car-badges">
+                        {% if car.is_featured %}
+                            <span class="badge badge-featured">Featured</span>
+                        {% endif %}
+                        {% if car.condition == 'brand_new' %}
+                            <span class="badge badge-new">New</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="car-content">
+                    <h3 class="car-title">{{ car.year }} {{ car.make.name }} {{ car.model.name }}</h3>
+                    <div class="car-price">KES {{ car.price|floatformat:0|intcomma }}</div>
+                    
+                    <div class="car-specs">
+                        <span class="spec-item">
+                            <i class="bi bi-speedometer2"></i>
+                            {{ car.mileage|intcomma }} km
+                        </span>
+                        <span class="spec-item">
+                            <i class="bi bi-gear"></i>
+                            {{ car.get_transmission_display }}
+                        </span>
+                    </div>
+                    
+                    <div class="car-location">
+                        <i class="bi bi-geo-alt"></i>
+                        {{ car.city }}, {{ car.country }}
+                    </div>
+                    
+                    <div class="car-footer">
+                        <div class="seller-info">
+                            <div class="seller-avatar">
+                                {% if car.dealer %}
+                                    <i class="bi bi-building"></i>
+                                {% else %}
+                                    <i class="bi bi-person"></i>
+                                {% endif %}
+                            </div>
+                            {% if car.dealer %}
+                                {{ car.dealer.business_name|truncatechars:15 }}
+                            {% else %}
+                                Private Seller
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'car_detail' car.slug %}" class="view-btn">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--secondary-color);">
+                <p>No featured cars available at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="section-actions">
+            <a href="{% url 'car_listings' %}" class="btn-outline">View All Vehicles</a>
+        </div>
+    </div>
+</section>
+
 <!-- How It Works -->
 <section class="info-section">
     <div class="section-container">
         <div class="section-header">
-            <h2>How TrueCar Works</h2>
-            <p>We make buying a car simple, transparent, and hassle-free</p>
+            <h2>How It Works</h2>
+            <p>Simple, transparent, and hassle-free car buying</p>
         </div>
         
         <div class="features-grid">
@@ -798,8 +1225,8 @@
         </div>
         
         <div class="brands-grid">
-             {% for make in popular_makes %}
-            <a href="#" class="brand-card">
+            {% for make in popular_makes %}
+            <a href="{% url 'car_listings' %}?make={{ make.slug }}" class="brand-card">
                 <div class="brand-name">{{ make.name }}</div>
                 <small>{{ make.car_count }} cars</small>
             </a>
@@ -817,25 +1244,25 @@
         </div>
         
         <div class="body-styles-grid">
-            <a href="#" class="body-style-card">
+            <a href="{% url 'car_listings' %}?body_type=suv" class="body-style-card">
                 <img src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=400" alt="SUV">
                 <div class="body-style-overlay">
                     <div class="body-style-name">SUVs</div>
                 </div>
             </a>
-            <a href="#" class="body-style-card">
+            <a href="{% url 'car_listings' %}?body_type=sedan" class="body-style-card">
                 <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400" alt="Sedan">
                 <div class="body-style-overlay">
                     <div class="body-style-name">Sedans</div>
                 </div>
             </a>
-            <a href="#" class="body-style-card">
+            <a href="{% url 'car_listings' %}?body_type=truck" class="body-style-card">
                 <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=400" alt="Truck">
                 <div class="body-style-overlay">
                     <div class="body-style-name">Trucks</div>
                 </div>
             </a>
-            <a href="#" class="body-style-card">
+            <a href="{% url 'car_listings' %}?body_type=coupe" class="body-style-card">
                 <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400" alt="Coupe">
                 <div class="body-style-overlay">
                     <div class="body-style-name">Coupes</div>
@@ -845,51 +1272,12 @@
     </div>
 </section>
 
-<!-- Expert Reviews -->
-<section class="reviews-section">
-    <div class="section-container">
-        <div class="section-header">
-            <h2>Expert Reviews</h2>
-            <p>Get insights from automotive experts</p>
-        </div>
-        
-        <div class="reviews-grid">
-            <div class="review-card">
-                <div class="review-image" style="background-image: url('https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400');"></div>
-                 {% for review in expert_reviews %}
-                <div class="review-content">
-                    <div class="review-car">2024 Toyota Camry</div>
-                    <div class="review-rating">
-                        {% for i in "12345" %}
-                            {% if forloop.counter <= review.rating %}
-                                <i class="bi bi-star-fill"></i>
-                            {% else %}
-                                <i class="bi bi-star"></i>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    <p class="review-text">{{ review.comment|truncatewords:20 }}</p>
-                    <div class="reviewer">
-                        <img src="https://ui-avatars.com/api/?name={{ review.user.get_full_name }}" alt="{{ review.user.get_full_name }}">
-                        <div class="reviewer-info">
-                            <div class="reviewer-name">{{ review.user.get_full_name }}</div>
-                            <div class="reviewer-title">Expert Reviewer</div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            
-        </div>
-    </div>
-</section>
-
 <!-- CTA Section -->
 <section class="cta-section">
     <h2>Ready to Find Your Next Car?</h2>
     <p>Start your journey with TrueCar today and experience a better way to buy cars</p>
     <div class="cta-buttons">
-        <a href="#" class="btn-primary">Search Cars</a>
+        <a href="{% url 'car_listings' %}" class="btn-primary">Search Cars</a>
         <a href="#" class="btn-secondary">Get Pre-Qualified</a>
     </div>
 </section>
@@ -900,10 +1288,10 @@
         <div class="footer-section">
             <h4>Buy a Car</h4>
             <ul>
-                <li><a href="#">Search Inventory</a></li>
-                <li><a href="#">New Cars</a></li>
-                <li><a href="#">Used Cars</a></li>
-                <li><a href="#">Certified Pre-Owned</a></li>
+                <li><a href="{% url 'car_listings' %}">Search Inventory</a></li>
+                <li><a href="{% url 'car_listings' %}?condition=new">New Cars</a></li>
+                <li><a href="{% url 'car_listings' %}?condition=used">Used Cars</a></li>
+                <li><a href="{% url 'car_listings' %}?condition=certified">Certified Pre-Owned</a></li>
                 <li><a href="#">Electric Vehicles</a></li>
             </ul>
         </div>
@@ -967,4 +1355,28 @@
     </div>
 </footer>
 
+<script>
+// Simple form handling for search
+document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.querySelector('.search-form');
+    
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            // Form validation can be added here
+            console.log('Search form submitted');
+        });
+    }
+    
+    // Make selection could trigger model loading
+    const makeSelect = document.querySelector('select[name="make"]');
+    const modelSelect = document.querySelector('select[name="model"]');
+    
+    if (makeSelect && modelSelect) {
+        makeSelect.addEventListener('change', function() {
+            // In a real implementation, this would fetch models for the selected make
+            modelSelect.innerHTML = '<option value="">All Models</option>';
+        });
+    }
+});
+</script>
 {% endblock %}
