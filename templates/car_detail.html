@@ -9,6 +9,21 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 <style>
+    :root {
+        --primary-color: #1a1a1a;
+        --primary-hover: #333333;
+        --secondary-color: #6c757d;
+        --accent-color: #0056b3;
+        --accent-hover: #004085;
+        --light-gray: #f8f9fa;
+        --border-color: #e0e0e0;
+        --white: #ffffff;
+        --success: #28a745;
+        --warning: #ffc107;
+        --danger: #dc3545;
+        --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
     * {
         margin: 0;
         padding: 0;
@@ -16,16 +31,17 @@
     }
 
     body {
-        background-color: #f8f9fa;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        color: #333;
+        background-color: var(--light-gray);
+        font-family: var(--font-family);
+        color: var(--primary-color);
+        line-height: 1.5;
     }
 
     /* Breadcrumb */
     .breadcrumb-container {
-        background: #fff;
+        background: var(--white);
         padding: 15px 0;
-        border-bottom: 1px solid #e5e5e5;
+        border-bottom: 1px solid var(--border-color);
     }
 
     .breadcrumb {
@@ -39,7 +55,7 @@
     }
 
     .breadcrumb a {
-        color: #007bff;
+        color: var(--accent-color);
         text-decoration: none;
     }
 
@@ -48,11 +64,11 @@
     }
 
     .breadcrumb-separator {
-        color: #999;
+        color: var(--secondary-color);
     }
 
     .breadcrumb-current {
-        color: #666;
+        color: var(--secondary-color);
     }
 
     /* Main Container */
@@ -73,13 +89,13 @@
 
     .car-title-section h1 {
         font-size: 32px;
-        font-weight: 700;
-        color: #1a1a1a;
-        margin-bottom: 10px;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 8px;
     }
 
     .car-subtitle {
-        color: #666;
+        color: var(--secondary-color);
         font-size: 16px;
     }
 
@@ -90,21 +106,21 @@
 
     .action-btn {
         padding: 10px 16px;
-        background: white;
-        border: 1px solid #ddd;
-        border-radius: 6px;
+        background: var(--white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
         cursor: pointer;
         display: flex;
         align-items: center;
         gap: 8px;
         font-size: 14px;
-        transition: all 0.3s;
+        transition: all 0.2s;
+        font-family: var(--font-family);
     }
 
     .action-btn:hover {
-        background: #f8f9fa;
-        border-color: #007bff;
-        color: #007bff;
+        background: var(--light-gray);
+        border-color: var(--primary-color);
     }
 
     .action-btn i {
@@ -112,8 +128,8 @@
     }
 
     .action-btn.favorited {
-        color: #ff6b6b;
-        border-color: #ff6b6b;
+        color: var(--danger);
+        border-color: var(--danger);
     }
 
     /* Main Layout */
@@ -130,17 +146,17 @@
 
     /* Image Gallery */
     .image-gallery {
-        background: #fff;
-        border-radius: 12px;
+        background: var(--white);
+        border-radius: 4px;
         overflow: hidden;
         margin-bottom: 30px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        border: 1px solid var(--border-color);
     }
 
     .main-image {
         width: 100%;
         height: 500px;
-        background: #f5f5f5;
+        background: var(--light-gray);
         position: relative;
     }
 
@@ -160,27 +176,27 @@
     }
 
     .badge {
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 12px;
+        padding: 6px 12px;
+        border-radius: 2px;
+        font-size: 11px;
         font-weight: 600;
         text-transform: uppercase;
         display: inline-block;
     }
 
     .badge-featured {
-        background: #ff6b6b;
-        color: white;
+        background: var(--danger);
+        color: var(--white);
     }
 
     .badge-urgent {
-        background: #ffc107;
-        color: #1a1a1a;
+        background: var(--warning);
+        color: var(--primary-color);
     }
 
     .badge-new {
-        background: #28a745;
-        color: white;
+        background: var(--success);
+        color: var(--white);
     }
 
     .thumbnail-strip {
@@ -188,25 +204,26 @@
         gap: 10px;
         padding: 15px;
         overflow-x: auto;
+        border-top: 1px solid var(--border-color);
     }
 
     .thumbnail {
         width: 100px;
         height: 75px;
-        border-radius: 6px;
+        border-radius: 2px;
         overflow: hidden;
         cursor: pointer;
         border: 2px solid transparent;
-        transition: all 0.3s;
+        transition: all 0.2s;
         flex-shrink: 0;
     }
 
     .thumbnail:hover {
-        border-color: #007bff;
+        border-color: var(--accent-color);
     }
 
     .thumbnail.active {
-        border-color: #007bff;
+        border-color: var(--accent-color);
     }
 
     .thumbnail img {
@@ -217,14 +234,14 @@
 
     /* AAA Banner */
     .aaa-banner {
-        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        background: var(--primary-color);
         padding: 20px;
-        border-radius: 8px;
+        border-radius: 4px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         margin-bottom: 30px;
-        color: white;
+        color: var(--white);
     }
 
     .aaa-content {
@@ -236,13 +253,13 @@
     .aaa-logo {
         width: 50px;
         height: 50px;
-        background: white;
-        border-radius: 8px;
+        background: var(--white);
+        border-radius: 4px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 700;
-        color: #1e3a8a;
+        font-weight: 600;
+        color: var(--primary-color);
     }
 
     .aaa-text h3 {
@@ -257,28 +274,31 @@
 
     .learn-more-btn {
         padding: 8px 20px;
-        background: white;
-        color: #1e3a8a;
+        background: var(--white);
+        color: var(--primary-color);
         border: none;
-        border-radius: 20px;
-        font-weight: 600;
+        border-radius: 4px;
+        font-weight: 500;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.2s;
+        font-family: var(--font-family);
     }
 
     .learn-more-btn:hover {
-        transform: scale(1.05);
+        background: var(--light-gray);
     }
 
     /* Tabs Navigation */
     .tabs-nav {
         display: flex;
         gap: 30px;
-        border-bottom: 2px solid #e5e5e5;
+        border-bottom: 1px solid var(--border-color);
         margin-bottom: 30px;
-        background: white;
+        background: var(--white);
         padding: 20px 20px 0;
-        border-radius: 12px 12px 0 0;
+        border-radius: 4px 4px 0 0;
+        border: 1px solid var(--border-color);
+        border-bottom: none;
     }
 
     .tab-btn {
@@ -286,32 +306,33 @@
         background: none;
         border: none;
         font-size: 16px;
-        font-weight: 600;
-        color: #666;
+        font-weight: 500;
+        color: var(--secondary-color);
         cursor: pointer;
         position: relative;
-        transition: color 0.3s;
+        transition: color 0.2s;
         display: flex;
         align-items: center;
         gap: 8px;
+        font-family: var(--font-family);
     }
 
     .tab-btn:hover {
-        color: #007bff;
+        color: var(--primary-color);
     }
 
     .tab-btn.active {
-        color: #007bff;
+        color: var(--primary-color);
     }
 
     .tab-btn.active::after {
         content: '';
         position: absolute;
-        bottom: -2px;
+        bottom: -1px;
         left: 0;
         right: 0;
         height: 2px;
-        background: #007bff;
+        background: var(--primary-color);
     }
 
     .tab-btn i {
@@ -329,16 +350,17 @@
 
     /* Vehicle Overview */
     .overview-section {
-        background: white;
+        background: var(--white);
         padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
     }
 
     .overview-section h2 {
         font-size: 24px;
-        font-weight: 700;
+        font-weight: 600;
         margin-bottom: 25px;
+        color: var(--primary-color);
     }
 
     .overview-grid {
@@ -356,12 +378,12 @@
     .overview-icon {
         width: 40px;
         height: 40px;
-        background: #f8f9fa;
-        border-radius: 8px;
+        background: var(--light-gray);
+        border-radius: 2px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #007bff;
+        color: var(--primary-color);
         font-size: 20px;
     }
 
@@ -371,31 +393,32 @@
 
     .overview-label {
         font-size: 12px;
-        color: #999;
+        color: var(--secondary-color);
         text-transform: uppercase;
-        font-weight: 600;
+        font-weight: 500;
         margin-bottom: 3px;
     }
 
     .overview-value {
         font-size: 16px;
-        color: #1a1a1a;
-        font-weight: 600;
+        color: var(--primary-color);
+        font-weight: 500;
     }
 
     /* Key Highlights */
     .highlights-section {
-        background: white;
+        background: var(--white);
         padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
         margin-top: 30px;
     }
 
     .highlights-section h2 {
         font-size: 24px;
-        font-weight: 700;
+        font-weight: 600;
         margin-bottom: 25px;
+        color: var(--primary-color);
     }
 
     .highlights-grid {
@@ -409,32 +432,34 @@
         align-items: center;
         gap: 10px;
         padding: 12px;
-        background: #f8f9fa;
-        border-radius: 8px;
+        background: var(--light-gray);
+        border-radius: 2px;
     }
 
     .highlight-item i {
-        color: #28a745;
+        color: var(--success);
         font-size: 18px;
     }
 
     .highlight-item span {
         font-size: 14px;
-        color: #333;
+        color: var(--primary-color);
     }
 
     /* Pricing Banner */
     .pricing-banner {
-        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        background: var(--light-gray);
         padding: 30px;
-        border-radius: 12px;
+        border-radius: 4px;
         margin-top: 30px;
+        border: 1px solid var(--border-color);
     }
 
     .pricing-banner h2 {
         font-size: 22px;
-        font-weight: 700;
+        font-weight: 600;
         margin-bottom: 20px;
+        color: var(--primary-color);
     }
 
     .pricing-features {
@@ -451,20 +476,21 @@
     }
 
     .pricing-feature i {
-        color: #0284c7;
+        color: var(--primary-color);
         font-size: 24px;
         flex-shrink: 0;
     }
 
     .pricing-feature-text h4 {
         font-size: 14px;
-        font-weight: 600;
+        font-weight: 500;
         margin-bottom: 5px;
+        color: var(--primary-color);
     }
 
     .pricing-feature-text p {
         font-size: 13px;
-        color: #666;
+        color: var(--secondary-color);
     }
 
     .your-price-display {
@@ -476,7 +502,7 @@
 
     .price-label {
         font-size: 14px;
-        color: #666;
+        color: var(--secondary-color);
         display: flex;
         align-items: center;
         gap: 8px;
@@ -484,27 +510,26 @@
 
     .price-amount {
         font-size: 32px;
-        font-weight: 700;
-        color: #1a1a1a;
+        font-weight: 600;
+        color: var(--primary-color);
     }
 
     .get-price-btn {
         width: 100%;
         padding: 14px;
-        background: #1a1a1a;
-        color: white;
+        background: var(--primary-color);
+        color: var(--white);
         border: none;
-        border-radius: 30px;
+        border-radius: 4px;
         font-size: 16px;
-        font-weight: 600;
+        font-weight: 500;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: background 0.2s;
+        font-family: var(--font-family);
     }
 
     .get-price-btn:hover {
-        background: #333;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        background: var(--primary-hover);
     }
 
     /* Recommended Section */
@@ -514,8 +539,9 @@
 
     .recommended-section h2 {
         font-size: 28px;
-        font-weight: 700;
+        font-weight: 600;
         margin-bottom: 30px;
+        color: var(--primary-color);
     }
 
     .recommended-grid {
@@ -525,22 +551,21 @@
     }
 
     .recommended-card {
-        background: white;
-        border-radius: 12px;
+        background: var(--white);
+        border-radius: 4px;
         overflow: hidden;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-        transition: all 0.3s;
+        border: 1px solid var(--border-color);
+        transition: all 0.2s;
     }
 
     .recommended-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        border-color: var(--primary-color);
     }
 
     .recommended-card-image {
         width: 100%;
         height: 200px;
-        background: #f5f5f5;
+        background: var(--light-gray);
         position: relative;
     }
 
@@ -558,11 +583,16 @@
         height: 32px;
         background: rgba(255,255,255,0.95);
         border: none;
-        border-radius: 50%;
+        border-radius: 2px;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .recommended-favorite:hover {
+        background: var(--white);
     }
 
     .recommended-card-content {
@@ -571,27 +601,27 @@
 
     .recommended-card-title {
         font-size: 16px;
-        font-weight: 600;
+        font-weight: 500;
         margin-bottom: 5px;
-        color: #1a1a1a;
+        color: var(--primary-color);
     }
 
     .recommended-card-subtitle {
         font-size: 14px;
-        color: #666;
+        color: var(--secondary-color);
         margin-bottom: 15px;
     }
 
     .recommended-card-price {
         font-size: 22px;
-        font-weight: 700;
-        color: #007bff;
+        font-weight: 600;
+        color: var(--primary-color);
         margin-bottom: 12px;
     }
 
     .recommended-card-location {
         font-size: 13px;
-        color: #999;
+        color: var(--secondary-color);
         display: flex;
         align-items: center;
         gap: 5px;
@@ -603,7 +633,7 @@
         justify-content: space-between;
         align-items: center;
         padding-top: 15px;
-        border-top: 1px solid #f0f0f0;
+        border-top: 1px solid var(--border-color);
     }
 
     .recommended-dealer {
@@ -611,39 +641,46 @@
         align-items: center;
         gap: 8px;
         font-size: 13px;
-        color: #666;
+        color: var(--secondary-color);
     }
 
     .recommended-action {
         padding: 6px 14px;
-        background: #007bff;
-        color: white;
+        background: var(--primary-color);
+        color: var(--white);
         border: none;
-        border-radius: 6px;
+        border-radius: 2px;
         font-size: 13px;
-        font-weight: 600;
+        font-weight: 500;
         cursor: pointer;
         text-decoration: none;
         display: inline-block;
+        transition: background 0.2s;
+    }
+
+    .recommended-action:hover {
+        background: var(--primary-hover);
+        color: var(--white);
     }
 
     /* Seller Notes */
     .seller-notes-section {
-        background: white;
+        background: var(--white);
         padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
         margin-top: 30px;
     }
 
     .seller-notes-section h2 {
         font-size: 24px;
-        font-weight: 700;
+        font-weight: 600;
         margin-bottom: 20px;
+        color: var(--primary-color);
     }
 
     .seller-notes-content {
-        color: #666;
+        color: var(--secondary-color);
         line-height: 1.8;
     }
 
@@ -653,8 +690,8 @@
 
     .note-section h4 {
         font-size: 16px;
-        font-weight: 600;
-        color: #1a1a1a;
+        font-weight: 500;
+        color: var(--primary-color);
         margin-bottom: 10px;
     }
 
@@ -672,10 +709,10 @@
 
     /* Price Card */
     .price-card {
-        background: white;
+        background: var(--white);
         padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
         margin-bottom: 20px;
     }
 
@@ -687,54 +724,53 @@
     }
 
     .price-header i {
-        color: #007bff;
+        color: var(--primary-color);
         font-size: 20px;
     }
 
     .price-header span {
         font-size: 14px;
-        color: #666;
+        color: var(--secondary-color);
     }
 
     .price-main {
         font-size: 36px;
-        font-weight: 700;
-        color: #1a1a1a;
+        font-weight: 600;
+        color: var(--primary-color);
         margin-bottom: 8px;
     }
 
     .price-note {
         font-size: 12px;
-        color: #999;
+        color: var(--secondary-color);
         margin-bottom: 20px;
     }
 
     .cta-button {
         width: 100%;
         padding: 14px;
-        background: #1a1a1a;
-        color: white;
+        background: var(--primary-color);
+        color: var(--white);
         border: none;
-        border-radius: 30px;
+        border-radius: 4px;
         font-size: 16px;
-        font-weight: 600;
+        font-weight: 500;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: background 0.2s;
         margin-bottom: 15px;
+        font-family: var(--font-family);
     }
 
     .cta-button:hover {
-        background: #333;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        background: var(--primary-hover);
     }
 
     /* EV Banner */
     .ev-banner {
-        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        background: var(--primary-color);
         padding: 20px;
-        border-radius: 12px;
-        color: white;
+        border-radius: 4px;
+        color: var(--white);
         margin-bottom: 20px;
         text-align: center;
     }
@@ -743,7 +779,7 @@
         width: 100%;
         height: 120px;
         background: rgba(255,255,255,0.1);
-        border-radius: 8px;
+        border-radius: 2px;
         margin-bottom: 15px;
         display: flex;
         align-items: center;
@@ -764,12 +800,44 @@
     .ev-research-btn {
         width: 100%;
         padding: 10px;
-        background: white;
-        color: #1e3a8a;
+        background: var(--white);
+        color: var(--primary-color);
         border: none;
-        border-radius: 20px;
-        font-weight: 600;
+        border-radius: 4px;
+        font-weight: 500;
         cursor: pointer;
+        transition: background 0.2s;
+        font-family: var(--font-family);
+    }
+
+    .ev-research-btn:hover {
+        background: var(--light-gray);
+    }
+
+    /* Seller Info Card */
+    .seller-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 2px;
+        background: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    /* Quick Stats */
+    .stats-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .stats-item:last-child {
+        border-bottom: none;
     }
 
     /* Responsive */
@@ -811,6 +879,38 @@
 
         .recommended-grid {
             grid-template-columns: 1fr;
+        }
+
+        .pricing-features {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .detail-container {
+            padding: 20px 15px;
+        }
+
+        .car-actions {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .action-btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .aaa-banner {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .your-price-display {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
         }
     }
 </style>
@@ -1112,7 +1212,7 @@
                     <h2>Specifications</h2>
                     {% if specs_by_category %}
                         {% for category, specs in specs_by_category.items %}
-                            <h3 style="font-size: 18px; margin: 25px 0 15px; color: #007bff;">{{ category }}</h3>
+                            <h3 style="font-size: 18px; margin: 25px 0 15px; color: var(--primary-color);">{{ category }}</h3>
                             <div class="overview-grid">
                                 {% for spec in specs %}
                                     <div class="overview-item">
@@ -1128,7 +1228,7 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                        <p style="color: #666;">No detailed specifications available.</p>
+                        <p style="color: var(--secondary-color);">No detailed specifications available.</p>
                     {% endif %}
                 </div>
             </div>
@@ -1160,10 +1260,10 @@
                         </div>
                         <div style="margin-top: 20px;">
                             <h4 style="font-size: 16px; margin-bottom: 10px;">Inspector Notes:</h4>
-                            <p style="color: #666; line-height: 1.7;">{{ latest_inspection.notes }}</p>
+                            <p style="color: var(--secondary-color); line-height: 1.7;">{{ latest_inspection.notes }}</p>
                         </div>
                     {% else %}
-                        <p style="color: #666;">No inspection report available for this vehicle.</p>
+                        <p style="color: var(--secondary-color);">No inspection report available for this vehicle.</p>
                     {% endif %}
                 </div>
             </div>
@@ -1219,7 +1319,7 @@
                                 <div class="recommended-card-price">
                                     KES {{ similar_car.price|floatformat:0|intcomma }}
                                     {% if similar_car.negotiable %}
-                                        <small style="font-size: 13px; color: #666; font-weight: 400;">est. lease</small>
+                                        <small style="font-size: 13px; color: var(--secondary-color); font-weight: 400;">est. lease</small>
                                     {% endif %}
                                 </div>
                                 <div class="recommended-card-location">
@@ -1229,8 +1329,14 @@
                                 <div class="recommended-card-footer">
                                     <div class="recommended-dealer">
                                         {% if similar_car.dealer %}
+                                            <div class="seller-avatar">
+                                                <i class="bi bi-building"></i>
+                                            </div>
                                             {{ similar_car.dealer.business_name|truncatechars:20 }}
                                         {% else %}
+                                            <div class="seller-avatar">
+                                                <i class="bi bi-person"></i>
+                                            </div>
                                             Private Seller
                                         {% endif %}
                                     </div>
@@ -1241,7 +1347,7 @@
                             </div>
                         </div>
                     {% empty %}
-                        <p style="color: #666; padding: 20px;">No similar cars found at the moment.</p>
+                        <p style="color: var(--secondary-color); padding: 20px;">No similar cars found at the moment.</p>
                     {% endfor %}
                 </div>
             </div>
@@ -1281,24 +1387,24 @@
                     <i class="bi bi-person-circle"></i> Seller Information
                 </h3>
                 <div style="margin-bottom: 15px;">
-                    <div style="font-weight: 600; margin-bottom: 5px;">
+                    <div style="font-weight: 500; margin-bottom: 5px;">
                         {% if car.dealer %}
                             {{ car.dealer.business_name }}
                         {% else %}
                             {{ car.seller.get_full_name|default:car.seller.username }}
                         {% endif %}
                     </div>
-                    <div style="font-size: 14px; color: #666;">
+                    <div style="font-size: 14px; color: var(--secondary-color);">
                         <i class="bi bi-geo-alt"></i> {{ car.location }}
                     </div>
                     {% if seller_cars_count > 0 %}
-                        <div style="font-size: 13px; color: #999; margin-top: 5px;">
+                        <div style="font-size: 13px; color: var(--secondary-color); margin-top: 5px;">
                             {{ seller_cars_count }} more listing{{ seller_cars_count|pluralize }}
                         </div>
                     {% endif %}
                 </div>
                 {% if car.dealer %}
-                    <div style="font-size: 13px; color: #666; margin-bottom: 15px;">
+                    <div style="font-size: 13px; color: var(--secondary-color); margin-bottom: 15px;">
                         <i class="bi bi-telephone"></i> {{ car.dealer.phone }}<br>
                         <i class="bi bi-envelope"></i> {{ car.dealer.email }}
                     </div>
@@ -1314,17 +1420,17 @@
                     <i class="bi bi-graph-up"></i> Vehicle Stats
                 </h3>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
-                        <span style="color: #666;">Views</span>
-                        <span style="font-weight: 600;">{{ car.views }}</span>
+                    <div class="stats-item">
+                        <span style="color: var(--secondary-color);">Views</span>
+                        <span style="font-weight: 500;">{{ car.views }}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
-                        <span style="color: #666;">Inquiries</span>
-                        <span style="font-weight: 600;">{{ car.inquiries }}</span>
+                    <div class="stats-item">
+                        <span style="color: var(--secondary-color);">Inquiries</span>
+                        <span style="font-weight: 500;">{{ car.inquiries }}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; padding: 10px 0;">
-                        <span style="color: #666;">Listed</span>
-                        <span style="font-weight: 600;">{{ car.created_at|timesince }} ago</span>
+                    <div class="stats-item">
+                        <span style="color: var(--secondary-color);">Listed</span>
+                        <span style="font-weight: 500;">{{ car.created_at|timesince }} ago</span>
                     </div>
                 </div>
             </div>
@@ -1334,35 +1440,35 @@
 
 <!-- Inquiry Modal -->
 <div id="inquiryModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
-    <div style="background: white; border-radius: 12px; padding: 30px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
+    <div style="background: var(--white); border-radius: 4px; padding: 30px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border-color);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="font-size: 24px; font-weight: 700;">Contact Seller</h2>
-            <button onclick="closeInquiryModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+            <h2 style="font-size: 24px; font-weight: 600;">Contact Seller</h2>
+            <button onclick="closeInquiryModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--secondary-color);">&times;</button>
         </div>
         
         <form method="post" action="{% url 'send_inquiry' car.slug %}">
             {% csrf_token %}
             <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Name</label>
-                <input type="text" name="name" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;" value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Name</label>
+                <input type="text" name="name" required style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 2px; font-family: var(--font-family);" value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}">
             </div>
             
             <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Email</label>
-                <input type="email" name="email" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;" value="{% if user.is_authenticated %}{{ user.email }}{% endif %}">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Email</label>
+                <input type="email" name="email" required style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 2px; font-family: var(--font-family);" value="{% if user.is_authenticated %}{{ user.email }}{% endif %}">
             </div>
             
             <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Phone</label>
-                <input type="tel" name="phone" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;" value="{% if user.is_authenticated %}{{ user.phone_number }}{% endif %}">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Phone</label>
+                <input type="tel" name="phone" required style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 2px; font-family: var(--font-family);" value="{% if user.is_authenticated %}{{ user.phone_number }}{% endif %}">
             </div>
             
             <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Message</label>
-                <textarea name="message" rows="5" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">I'm interested in this {{ car.year }} {{ car.make.name }} {{ car.model.name }}. Please contact me with more information.</textarea>
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Message</label>
+                <textarea name="message" rows="5" required style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 2px; font-family: var(--font-family);">I'm interested in this {{ car.year }} {{ car.make.name }} {{ car.model.name }}. Please contact me with more information.</textarea>
             </div>
             
-            <button type="submit" style="width: 100%; padding: 14px; background: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: 600; cursor: pointer;">
+            <button type="submit" style="width: 100%; padding: 14px; background: var(--primary-color); color: var(--white); border: none; border-radius: 4px; font-size: 16px; font-weight: 500; cursor: pointer; font-family: var(--font-family);">
                 Send Inquiry
             </button>
         </form>
