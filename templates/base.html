@@ -1,0 +1,772 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TrueCar - Find Your Perfect Car{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --primary-color: #1a56db;
+            --secondary-color: #0e7490;
+            --dark-color: #1e293b;
+            --light-bg: #f8fafc;
+            --border-color: #e2e8f0;
+            --sidebar-width: 300px;
+            --header-height: 70px;
+            --navbar-height: 48px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--light-bg);
+            padding-top: calc(var(--header-height) + var(--navbar-height));
+        }
+
+        /* Top Header */
+        .top-header {
+            background-color: #fff;
+            border-bottom: 1px solid var(--border-color);
+            height: var(--header-height);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1040;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .logo:hover {
+            color: var(--secondary-color);
+        }
+
+        /* Search Bar */
+        .header-search {
+            flex: 1;
+            max-width: 600px;
+            margin: 0 32px;
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 12px 48px 12px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+
+        .search-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+        }
+
+        .search-wrapper .search-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 18px;
+        }
+
+        /* Header Actions */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .header-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--dark-color);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .header-link:hover {
+            background-color: #f1f5f9;
+            color: var(--primary-color);
+        }
+
+        .header-link i {
+            font-size: 18px;
+        }
+
+        .btn-sell {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-sell:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 86, 219, 0.2);
+        }
+
+        /* Navigation Bar */
+        .main-navbar {
+            background-color: var(--dark-color);
+            height: var(--navbar-height);
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            right: 0;
+            z-index: 1030;
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .filter-toggle {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .filter-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .filter-toggle i {
+            font-size: 16px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-links a.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: calc(var(--header-height) + var(--navbar-height));
+            left: 0;
+            width: var(--sidebar-width);
+            height: calc(100vh - var(--header-height) - var(--navbar-height));
+            background-color: #fff;
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            padding: 24px;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 1020;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .sidebar-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .close-sidebar {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #64748b;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .close-sidebar:hover {
+            color: var(--dark-color);
+        }
+
+        .filter-section {
+            margin-bottom: 28px;
+        }
+
+        .filter-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--dark-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .clear-filter {
+            font-size: 13px;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .clear-filter:hover {
+            text-decoration: underline;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-option:hover {
+            padding-left: 4px;
+        }
+
+        .filter-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        .filter-option label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 14px;
+            color: #475569;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .count-badge {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .range-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .range-inputs input {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .range-inputs input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .apply-filters {
+            width: 100%;
+            margin-top: 24px;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .apply-filters:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+
+        /* Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: calc(var(--header-height) + var(--navbar-height));
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1010;
+            backdrop-filter: blur(2px);
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+            min-height: calc(100vh - var(--header-height) - var(--navbar-height));
+        }
+
+        /* Scrollbar Styling */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 992px) {
+            .header-search {
+                max-width: 400px;
+                margin: 0 16px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container,
+            .navbar-container {
+                padding: 0 16px;
+            }
+
+            .header-search {
+                display: none;
+            }
+
+            .header-actions {
+                gap: 8px;
+            }
+
+            .header-link span {
+                display: none;
+            }
+
+            .btn-sell {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+
+            .main-content {
+                padding: 16px;
+            }
+
+            :root {
+                --sidebar-width: 280px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 22px;
+            }
+
+            .navbar-container {
+                gap: 16px;
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Top Header -->
+    <header class="top-header">
+        <div class="header-container">
+            <div class="logo-section">
+                <a href="/" class="logo">TrueCar</a>
+            </div>
+
+            <div class="header-search">
+                <div class="search-wrapper">
+                    <input type="text" placeholder="Search by make, model, or keyword...">
+                    <i class="bi bi-search search-icon"></i>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <a href="#" class="header-link">
+                    <i class="bi bi-heart"></i>
+                    <span>Saved</span>
+                </a>
+                <a href="#" class="header-link">
+                    <i class="bi bi-person-circle"></i>
+                    <span>Sign In</span>
+                </a>
+                <a href="#" class="btn-sell">Sell Your Car</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Navigation -->
+    <nav class="main-navbar">
+        <div class="navbar-container">
+            <button class="filter-toggle" id="filterToggle">
+                <i class="bi bi-sliders"></i>
+                <span>Filters</span>
+            </button>
+
+            <ul class="nav-links">
+                <li><a href="#" class="active">All Cars</a></li>
+                <li><a href="#">New Arrivals</a></li>
+                <li><a href="#">Certified Pre-Owned</a></li>
+                <li><a href="#">Electric Vehicles</a></li>
+                <li><a href="#">Financing</a></li>
+                <li><a href="#">Dealer Reviews</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Filters Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Filters</h2>
+            <button class="close-sidebar" id="closeSidebar">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-title">
+                <span>Year</span>
+                <span class="clear-filter">Clear</span>
+            </div>
+            <div class="range-inputs">
+                <input type="number" placeholder="Min Year">
+                <input type="number" placeholder="Max Year">
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-title">
+                <span>Price Range</span>
+                <span class="clear-filter">Clear</span>
+            </div>
+            <div class="range-inputs">
+                <input type="text" placeholder="Min Price">
+                <input type="text" placeholder="Max Price">
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-title">
+                <span>Make</span>
+                <span class="clear-filter">Clear</span>
+            </div>
+            <input type="text" class="search-input" placeholder="Search make...">
+            <div class="filter-option">
+                <input type="checkbox" id="toyota">
+                <label for="toyota">
+                    <span>Toyota</span>
+                    <span class="count-badge">856</span>
+                </label>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="honda">
+                <label for="honda">
+                    <span>Honda</span>
+                    <span class="count-badge">789</span>
+                </label>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="ford">
+                <label for="ford">
+                    <span>Ford</span>
+                    <span class="count-badge">623</span>
+                </label>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="chevrolet">
+                <label for="chevrolet">
+                    <span>Chevrolet</span>
+                    <span class="count-badge">567</span>
+                </label>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="bmw">
+                <label for="bmw">
+                    <span>BMW</span>
+                    <span class="count-badge">428</span>
+                </label>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="mercedes">
+                <label for="mercedes">
+                    <span>Mercedes-Benz</span>
+                    <span class="count-badge">334</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-title">
+                <span>Body Style</span>
+                <span class="clear-filter">Clear</span>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="suv">
+                <label for="suv">
+                    <span>SUV</span>
+                    <span class="count-badge">456</span>
+                </label>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="sedan">
+                <label for="sedan">
+                    <span>Sedan</span>
+                    <span class="count-badge">234</span>
+                </label>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="truck">
+                <label for="truck">
+                    <span>Truck</span>
+                    <span class="count-badge">189</span>
+                </label>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="coupe">
+                <label for="coupe">
+                    <span>Coupe</span>
+                    <span class="count-badge">123</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-title">
+                <span>Mileage</span>
+                <span class="clear-filter">Clear</span>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="mile1">
+                <label for="mile1">Under 15,000 miles</label>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="mile2">
+                <label for="mile2">15,000 - 30,000 miles</label>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="mile3">
+                <label for="mile3">30,000 - 50,000 miles</label>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="mile4">
+                <label for="mile4">50,000+ miles</label>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-title">
+                <span>Transmission</span>
+                <span class="clear-filter">Clear</span>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="auto">
+                <label for="auto">Automatic</label>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="manual">
+                <label for="manual">Manual</label>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-title">
+                <span>Fuel Type</span>
+                <span class="clear-filter">Clear</span>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="gas">
+                <label for="gas">Gasoline</label>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="diesel">
+                <label for="diesel">Diesel</label>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="electric">
+                <label for="electric">Electric</label>
+            </div>
+            <div class="filter-option">
+                <input type="checkbox" id="hybrid">
+                <label for="hybrid">Hybrid</label>
+            </div>
+        </div>
+
+        <button class="apply-filters">Apply Filters</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}
+        <!-- Page content goes here -->
+        {% endblock %}
+    </main>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Sidebar toggle functionality
+        const filterToggle = document.getElementById('filterToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('show');
+            sidebarOverlay.classList.toggle('show');
+            document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+        }
+
+        filterToggle.addEventListener('click', toggleSidebar);
+        closeSidebar.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+
+        // Clear individual filter sections
+        document.querySelectorAll('.clear-filter').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const section = this.closest('.filter-section');
+                section.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                section.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => input.value = '');
+            });
+        });
+
+        // Close sidebar on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && sidebar.classList.contains('show')) {
+                toggleSidebar();
+            }
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

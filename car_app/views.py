@@ -20,41 +20,221 @@ import paypalrestsdk
 
 # ============= HOME & LISTINGS =============
 
+from django.shortcuts import render
+from django.db.models import Count, Avg, Min, Max
+from django.shortcuts import render
+from django.db.models import Count, Avg, Min, Max, Q
+from .models import Car, CarMake, Review, User
+
 def home(request):
-    """Homepage"""
-    # Featured cars
+    """
+    Home page view with featured cars, statistics, and navigation options
+    """
+    
+    # Get total number of active cars
+    total_cars = Car.objects.filter(status='active').count()
+    
+    # Get featured cars (latest 6 cars)
     featured_cars = Car.objects.filter(
+        status='active'
+    ).select_related(
+        'make', 'model', 'seller'
+    ).prefetch_related(
+        'images'
+    ).order_by('-created_at')[:6]
+    
+    # Get cars for different categories
+    # Shop by budget - cars under different price ranges
+    budget_cars = {
+        'under_20k': Car.objects.filter(
+            status='active',
+            price__lt=20000
+        ).select_related('make', 'model').prefetch_related('images').order_by('price')[:3],
+        'under_30k': Car.objects.filter(
+            status='active',
+            price__lt=30000,
+            price__gte=20000
+        ).select_related('make', 'model').prefetch_related('images').order_by('price')[:3],
+        'luxury': Car.objects.filter(
+            status='active',
+            price__gte=50000
+        ).select_related('make', 'model').prefetch_related('images').order_by('-price')[:3],
+    }
+    
+    # Get popular makes with car counts
+    popular_makes = CarMake.objects.annotate(
+        car_count=Count('car', filter=Q(car__status='active'))
+    ).filter(car_count__gt=0).order_by('-car_count', 'name')[:12]
+    
+    # Get cars by body style with counts
+    body_styles = Car.objects.filter(
+        status='active'
+    ).values('body_type').annotate(
+        car_count=Count('id')
+    ).order_by('-car_count')[:8]
+    
+    # Get expert reviews (latest 3) - filter for car reviews that are approved
+    expert_reviews = Review.objects.filter(
+        review_type='car',
+        is_approved=True,
+        car__isnull=False
+    ).select_related('car', 'reviewer', 'car__make', 'car__model').order_by('-created_at')[:3]
+    
+    # Get customer testimonials (latest 4) - highly rated reviews
+    customer_reviews = Review.objects.filter(
+        review_type='car',
+        is_approved=True,
+        rating__gte=4,
+        car__isnull=False
+    ).select_related('car', 'reviewer', 'car__make', 'car__model').order_by('-created_at')[:4]
+    
+    # Calculate average savings or price statistics
+    price_stats = Car.objects.filter(status='active').aggregate(
+        avg_price=Avg('price'),
+        min_price=Min('price'),
+        max_price=Max('price')
+    )
+    
+    # Get best deals (featured cars sorted by price)
+    best_deals = Car.objects.filter(
         status='active',
         is_featured=True
-    ).select_related('make', 'model', 'seller').prefetch_related('images')[:8]
+    ).select_related('make', 'model').prefetch_related('images').order_by('price')[:6]
     
-    # Latest cars
-    latest_cars = Car.objects.filter(
+    # Additional useful data
+    # Get recently added cars
+    recent_cars = Car.objects.filter(
         status='active'
-    ).select_related('make', 'model', 'seller').prefetch_related('images').order_by('-created_at')[:12]
+    ).select_related('make', 'model').prefetch_related('images').order_by('-created_at')[:4]
     
-    # Popular makes
-    popular_makes = CarMake.objects.filter(is_popular=True).order_by('order')[:10]
-    
-    # Banners
-    banners = Banner.objects.filter(
-        is_active=True
-    ).order_by('order')
-    
-    # Stats
-    total_cars = Car.objects.filter(status='active').count()
-    total_dealers = Dealer.objects.filter(is_verified=True).count()
+    # Get urgent sales
+    urgent_cars = Car.objects.filter(
+        status='active',
+        is_urgent=True
+    ).select_related('make', 'model').prefetch_related('images').order_by('-created_at')[:4]
     
     context = {
-        'featured_cars': featured_cars,
-        'latest_cars': latest_cars,
-        'popular_makes': popular_makes,
-        'banners': banners,
         'total_cars': total_cars,
-        'total_dealers': total_dealers,
+        'featured_cars': featured_cars,
+        'budget_cars': budget_cars,
+        'popular_makes': popular_makes,
+        'body_styles': body_styles,
+        'expert_reviews': expert_reviews,
+        'customer_reviews': customer_reviews,
+        'price_stats': price_stats,
+        'best_deals': best_deals,
+        'recent_cars': recent_cars,
+        'urgent_cars': urgent_cars,
     }
     
     return render(request, 'home.html', context)
+
+
+
+def search_cars(request):
+    """
+    Search and filter cars based on user criteria
+    """
+    cars = Car.objects.filter(is_active=True)
+    
+    # Get filter parameters from request
+    make_id = request.GET.get('make')
+    model_id = request.GET.get('model')
+    min_year = request.GET.get('min_year')
+    max_year = request.GET.get('max_year')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    body_style_id = request.GET.get('body_style')
+    fuel_type_id = request.GET.get('fuel_type')
+    transmission_id = request.GET.get('transmission')
+    min_mileage = request.GET.get('min_mileage')
+    max_mileage = request.GET.get('max_mileage')
+    
+    # Apply filters
+    if make_id:
+        cars = cars.filter(make_id=make_id)
+    
+    if model_id:
+        cars = cars.filter(model_id=model_id)
+    
+    if min_year:
+        cars = cars.filter(year__gte=min_year)
+    
+    if max_year:
+        cars = cars.filter(year__lte=max_year)
+    
+    if min_price:
+        cars = cars.filter(price__gte=min_price)
+    
+    if max_price:
+        cars = cars.filter(price__lte=max_price)
+    
+    if body_style_id:
+        cars = cars.filter(body_style_id=body_style_id)
+    
+    if fuel_type_id:
+        cars = cars.filter(fuel_type_id=fuel_type_id)
+    
+    if transmission_id:
+        cars = cars.filter(transmission_id=transmission_id)
+    
+    if min_mileage:
+        cars = cars.filter(mileage__gte=min_mileage)
+    
+    if max_mileage:
+        cars = cars.filter(mileage__lte=max_mileage)
+    
+    # Select related for optimization
+    cars = cars.select_related(
+        'make', 'model', 'body_style', 'fuel_type', 'transmission'
+    ).order_by('-created_at')
+    
+    context = {
+        'cars': cars,
+        'total_results': cars.count(),
+    }
+    
+    return render(request, 'search_results.html', context)
+
+
+def car_detail(request, pk):
+    """
+    Display detailed information about a specific car
+    """
+    car = get_object_or_404(
+        Car.objects.select_related(
+            'make', 'model', 'body_style', 'fuel_type', 'transmission'
+        ).prefetch_related('images', 'reviews'),
+        pk=pk,
+        is_active=True
+    )
+    
+    # Get related cars (same make or model)
+    related_cars = Car.objects.filter(
+        is_active=True
+    ).filter(
+        Q(make=car.make) | Q(model=car.model)
+    ).exclude(pk=car.pk).select_related(
+        'make', 'model', 'body_style'
+    )[:6]
+    
+    # Get reviews for this car
+    reviews = car.reviews.filter(
+        is_approved=True
+    ).select_related('user').order_by('-created_at')
+    
+    context = {
+        'car': car,
+        'related_cars': related_cars,
+        'reviews': reviews,
+    }
+    
+    return render(request, 'car_detail.html', context)
+
+
+# Import Q for complex queries
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
 
 def car_listings(request):

@@ -1,0 +1,1077 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}TrueCar - Buy New & Used Cars Online{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Override main content for homepage */
+    .main-content {
+        margin-left: 0;
+        padding: 0;
+        margin-top: var(--header-height);
+    }
+
+    /* Hero Section */
+    .hero-section {
+        position: relative;
+        height: 500px;
+        background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                    url('https://images.unsplash.com/photo-1542282088-fe8426682b8f?w=1920') center/cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-align: center;
+    }
+
+    .hero-content h1 {
+        font-size: 48px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .hero-content p {
+        font-size: 20px;
+        margin-bottom: 40px;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    .action-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        padding: 20px;
+        width: 140px;
+        text-align: center;
+        cursor: pointer;
+        transition: transform 0.3s;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .action-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .action-card i {
+        font-size: 36px;
+        color: #0066cc;
+        margin-bottom: 10px;
+    }
+
+    .action-card span {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    /* Buy Online Section */
+    .buy-online-section {
+        background: #000;
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+    }
+
+    .buy-online-section h2 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 50px;
+    }
+
+    .buy-online-section h2 span {
+        color: #0066cc;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .feature-item {
+        text-align: center;
+    }
+
+    .feature-item i {
+        font-size: 48px;
+        color: #0066cc;
+        margin-bottom: 20px;
+    }
+
+    .feature-item h3 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .feature-item p {
+        color: #aaa;
+        font-size: 14px;
+    }
+
+    .cta-button {
+        background: #0066cc;
+        color: white;
+        border: none;
+        padding: 12px 40px;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 30px;
+        transition: background 0.3s;
+    }
+
+    .cta-button:hover {
+        background: #0052a3;
+    }
+
+    /* Buying Power Section */
+    .buying-power-section {
+        padding: 60px 20px;
+        background: white;
+    }
+
+    .section-title {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .calculator-card {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .car-preview {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .car-preview img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .price-display {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .price-display .amount {
+        font-size: 48px;
+        font-weight: 700;
+        color: #0066cc;
+    }
+
+    .price-display .label {
+        color: #666;
+        font-size: 14px;
+    }
+
+    .calculator-inputs {
+        display: grid;
+        gap: 20px;
+    }
+
+    .input-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .form-field label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .form-field input,
+    .form-field select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .calculate-btn {
+        width: 100%;
+        background: #000;
+        color: white;
+        padding: 15px;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+
+    /* Featured Tools */
+    .featured-tools-section {
+        padding: 80px 20px;
+        background: #f8f9fa;
+    }
+
+    .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .tool-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+    }
+
+    .tool-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .tool-card-image {
+        height: 200px;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .tool-card-content {
+        padding: 30px 20px;
+    }
+
+    .tool-card h3 {
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+
+    .tool-card p {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    .tool-btn {
+        background: #000;
+        color: white;
+        padding: 10px 30px;
+        border-radius: 25px;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    /* Why TrueCar Section */
+    .why-section {
+        padding: 80px 20px;
+        background: #000;
+        color: white;
+        text-align: center;
+    }
+
+    .why-section h2 {
+        font-size: 36px;
+        margin-bottom: 60px;
+    }
+
+    .benefits-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 50px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .benefit-item i {
+        font-size: 64px;
+        color: #0066cc;
+        margin-bottom: 20px;
+    }
+
+    .benefit-item h3 {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    .benefit-item p {
+        color: #aaa;
+        font-size: 14px;
+    }
+
+    /* Popular Brands */
+    .brands-section {
+        padding: 80px 20px;
+        background: white;
+    }
+
+    .brands-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 40px auto;
+    }
+
+    .brand-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 30px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .brand-card:hover {
+        border-color: #0066cc;
+        box-shadow: 0 4px 15px rgba(0,102,204,0.1);
+    }
+
+    .brand-card img {
+        max-width: 80px;
+        height: auto;
+        margin-bottom: 10px;
+    }
+
+    .brand-card .brand-name {
+        font-size: 16px;
+        font-weight: 600;
+        margin-top: 10px;
+    }
+
+    /* Body Style Section */
+    .body-style-section {
+        padding: 80px 20px;
+        background: #f8f9fa;
+    }
+
+    .body-styles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        max-width: 1200px;
+        margin: 40px auto;
+    }
+
+    .body-style-card {
+        position: relative;
+        height: 150px;
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .body-style-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .body-style-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        padding: 20px;
+        color: white;
+    }
+
+    .body-style-name {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    /* Expert Reviews */
+    .reviews-section {
+        padding: 80px 20px;
+        background: white;
+    }
+
+    .reviews-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 40px auto;
+    }
+
+    .review-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .review-image {
+        height: 200px;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .review-content {
+        padding: 20px;
+    }
+
+    .review-car {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .review-rating {
+        color: #ffa500;
+        margin-bottom: 10px;
+    }
+
+    .review-text {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    .reviewer {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-top: 15px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .reviewer img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+
+    .reviewer-info {
+        flex: 1;
+    }
+
+    .reviewer-name {
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .reviewer-title {
+        font-size: 12px;
+        color: #999;
+    }
+
+    /* Testimonials */
+    .testimonials-section {
+        padding: 80px 20px;
+        background: #f8f9fa;
+    }
+
+    .testimonials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 40px auto;
+    }
+
+    .testimonial-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .testimonial-text {
+        font-size: 15px;
+        color: #333;
+        margin-bottom: 20px;
+        font-style: italic;
+    }
+
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .testimonial-author img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+
+    .author-info .name {
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .author-info .verified {
+        font-size: 12px;
+        color: #0066cc;
+    }
+
+    /* CTA Banners */
+    .cta-banners {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 60px auto;
+        padding: 0 20px;
+    }
+
+    .cta-banner {
+        position: relative;
+        height: 300px;
+        border-radius: 12px;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-align: center;
+    }
+
+    .cta-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.4);
+    }
+
+    .cta-banner-content {
+        position: relative;
+        z-index: 1;
+        padding: 30px;
+    }
+
+    .cta-banner h3 {
+        font-size: 28px;
+        margin-bottom: 15px;
+    }
+
+    .cta-banner p {
+        margin-bottom: 20px;
+    }
+
+    .cta-banner .btn {
+        background: white;
+        color: #000;
+        padding: 10px 30px;
+        border-radius: 25px;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: 600;
+    }
+
+    /* Resources Section */
+    .resources-section {
+        padding: 60px 20px;
+        background: white;
+    }
+
+    .resources-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+    }
+
+    .resource-tab {
+        padding: 10px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .resource-tab:hover,
+    .resource-tab.active {
+        border-color: #0066cc;
+        color: #0066cc;
+    }
+
+    /* Footer */
+    footer {
+        background: #000;
+        color: white;
+        padding: 60px 20px 20px;
+    }
+
+    .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
+        margin-bottom: 40px;
+    }
+
+    .footer-section h4 {
+        margin-bottom: 20px;
+        font-size: 16px;
+    }
+
+    .footer-section ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 10px;
+    }
+
+    .footer-section a {
+        color: #aaa;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .footer-section a:hover {
+        color: white;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .social-links a {
+        color: white;
+        font-size: 20px;
+    }
+
+    .footer-bottom {
+        border-top: 1px solid #333;
+        padding-top: 20px;
+        text-align: center;
+        color: #666;
+        font-size: 12px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero-content h1 {
+            font-size: 32px;
+        }
+
+        .quick-actions {
+            flex-wrap: wrap;
+        }
+
+        .section-title {
+            font-size: 24px;
+        }
+
+        .input-group {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-content">
+        <h1>Car buying<br>shaped to your life</h1>
+        <p>Find your perfect car with confidence</p>
+        
+        <div class="quick-actions">
+            <a href="#" class="action-card">
+                <i class="bi bi-search"></i>
+                <span>Search cars</span>
+            </a>
+            <a href="#" class="action-card">
+                <i class="bi bi-cart"></i>
+                <span>Buy online</span>
+            </a>
+            <a href="#" class="action-card">
+                <i class="bi bi-cash-coin"></i>
+                <span>Sell or trade</span>
+            </a>
+            <a href="#" class="action-card">
+                <i class="bi bi-calculator"></i>
+                <span>Car payment</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Buy Online Section -->
+<section class="buy-online-section">
+    <div class="container">
+        <h2>BUY ONLINE.<br>HAVE IT <span>DELIVERED.</span></h2>
+        
+        <div class="features-grid">
+            <div class="feature-item">
+                <i class="bi bi-shield-check"></i>
+                <h3>How does TrueCar work?</h3>
+                <p>Get transparent pricing, compare deals, and buy with confidence</p>
+            </div>
+            
+            <div class="feature-item">
+                <i class="bi bi-truck"></i>
+                <h3>Home test drives</h3>
+                <p>Test drive at home on your schedule</p>
+            </div>
+            
+            <div class="feature-item">
+                <i class="bi bi-credit-card"></i>
+                <h3>Finance or lease options</h3>
+                <p>Get pre-qualified in minutes with no impact to your credit</p>
+            </div>
+        </div>
+        
+        <button class="cta-button">Get started</button>
+    </div>
+</section>
+
+<!-- Buying Power Calculator -->
+<section class="buying-power-section">
+    <div class="container">
+        <h2 class="section-title">Know your buying power 💪</h2>
+        
+        <div class="calculator-card">
+            <div class="car-preview">
+                <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=400" alt="Car">
+            </div>
+            
+            <div class="price-display">
+                <div class="amount">$27,881</div>
+                <div class="label">Estimated monthly payment</div>
+            </div>
+            
+            <form class="calculator-inputs">
+                <div class="form-field">
+                    <label>Vehicle price</label>
+                    <input type="text" value="$35,000">
+                </div>
+                
+                <div class="input-group">
+                    <div class="form-field">
+                        <label>ZIP code</label>
+                        <input type="text" placeholder="Enter ZIP">
+                    </div>
+                    <div class="form-field">
+                        <label>Credit score</label>
+                        <select>
+                            <option>Excellent (720+)</option>
+                            <option>Good (680-719)</option>
+                            <option>Fair (640-679)</option>
+                            <option>Poor (639 or less)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-check mt-3">
+                    <input type="checkbox" id="hasTradeIn">
+                    <label for="hasTradeIn">I have a trade-in</label>
+                </div>
+                
+                <button type="submit" class="calculate-btn">Calculate my payment</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Tools -->
+<section class="featured-tools-section">
+    <div class="container">
+        <h2 class="section-title">Featured tools</h2>
+        
+        <div class="tools-grid">
+            <div class="tool-card">
+                <div class="tool-card-image" style="background-image: url('https://images.unsplash.com/photo-1563720360172-67b8f3dce741?w=400');">
+                </div>
+                <div class="tool-card-content">
+                    <i class="bi bi-tags" style="font-size: 36px; color: #0066cc;"></i>
+                    <h3>Shop by budget</h3>
+                    <p>See how much car you can afford with our budget calculator</p>
+                    <a href="#" class="tool-btn">Start shopping</a>
+                </div>
+            </div>
+            
+            <div class="tool-card">
+                <div class="tool-card-image" style="background-image: url('https://images.unsplash.com/photo-1542282088-fe8426682b8f?w=400');">
+                </div>
+                <div class="tool-card-content">
+                    <i class="bi bi-tools" style="font-size: 36px; color: #0066cc;"></i>
+                    <h3>Build your car</h3>
+                    <p>Configure your dream car with our interactive builder</p>
+                    <a href="#" class="tool-btn">Start building</a>
+                </div>
+            </div>
+            
+            <div class="tool-card">
+                <div class="tool-card-image" style="background-image: url('https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400');">
+                </div>
+                <div class="tool-card-content">
+                    <i class="bi bi-arrow-left-right" style="font-size: 36px; color: #0066cc;"></i>
+                    <h3>Sell and trade</h3>
+                    <p>Get the best value for your current vehicle</p>
+                    <a href="#" class="tool-btn">Get your value</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why TrueCar -->
+<section class="why-section">
+    <div class="container">
+        <h2>Why TrueCar?</h2>
+        
+        <div class="benefits-grid">
+            <div class="benefit-item">
+                <i class="bi bi-graph-up"></i>
+                <h3>Transparent pricing</h3>
+                <p>See what others paid for the same car in your area</p>
+            </div>
+            
+            <div class="benefit-item">
+                <i class="bi bi-clock-history"></i>
+                <h3>Save time and money</h3>
+                <p>Compare deals from certified dealers instantly</p>
+            </div>
+            
+            <div class="benefit-item">
+                <i class="bi bi-star"></i>
+                <h3>Shop your way</h3>
+                <p>Buy online, at the dealer, or have it delivered</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Brands -->
+<section class="brands-section">
+    <div class="container">
+        <h2 class="section-title">Shop your favorite brand</h2>
+        
+        <div class="brands-grid">
+            {% for make in popular_makes %}
+            <a href="#" class="brand-card">
+                <div class="brand-name">{{ make.name }}</div>
+                <small>{{ make.car_count }} cars</small>
+            </a>
+            {% endfor %}
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="cta-button">Show all brands</button>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Banners -->
+<div class="cta-banners">
+    <div class="cta-banner" style="background-image: url('https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600');">
+        <div class="cta-banner-content">
+            <h3>Car and trucks</h3>
+            <p>Find your perfect vehicle</p>
+            <a href="#" class="btn">Search now</a>
+        </div>
+    </div>
+    
+    <div class="cta-banner" style="background-image: url('https://images.unsplash.com/photo-1523206489230-c012c64b2b48?w=600');">
+        <div class="cta-banner-content">
+            <h3>Military savings</h3>
+            <p>Special offers for military members</p>
+            <a href="#" class="btn">Learn more</a>
+        </div>
+    </div>
+</div>
+
+<!-- Body Styles -->
+<section class="body-style-section">
+    <div class="container">
+        <h2 class="section-title">Top-rated cars by type</h2>
+        
+        <div class="body-styles-grid">
+            {% for style in body_styles %}
+            <a href="#" class="body-style-card">
+                <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=300" alt="{{ style.name }}">
+                <div class="body-style-overlay">
+                    <div class="body-style-name">{{ style.name }}</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="cta-button">Show more</button>
+        </div>
+    </div>
+</section>
+
+<!-- Expert Reviews -->
+<section class="reviews-section">
+    <div class="container">
+        <h2 class="section-title">Get car reviews from our experts</h2>
+        
+        <div class="reviews-grid">
+            {% for review in expert_reviews %}
+            <div class="review-card">
+                <div class="review-image" style="background-image: url('https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400');">
+                </div>
+                <div class="review-content">
+                    <div class="review-car">{{ review.car.year }} {{ review.car.make.name }} {{ review.car.model.name }}</div>
+                    <div class="review-rating">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= review.rating %}
+                                <i class="bi bi-star-fill"></i>
+                            {% else %}
+                                <i class="bi bi-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <p class="review-text">{{ review.comment|truncatewords:20 }}</p>
+                    <div class="reviewer">
+                        <img src="https://ui-avatars.com/api/?name={{ review.user.get_full_name }}" alt="{{ review.user.get_full_name }}">
+                        <div class="reviewer-info">
+                            <div class="reviewer-name">{{ review.user.get_full_name }}</div>
+                            <div class="reviewer-title">Expert Reviewer</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Customer Testimonials -->
+<section class="testimonials-section">
+    <div class="container">
+        <h2 class="section-title">What people are saying</h2>
+        
+        <div class="testimonials-grid">
+            {% for review in customer_reviews %}
+            <div class="testimonial-card">
+                <p class="testimonial-text">"{{ review.comment|truncatewords:30 }}"</p>
+                <div class="testimonial-author">
+                    <img src="https://ui-avatars.com/api/?name={{ review.user.get_full_name }}" alt="{{ review.user.get_full_name }}">
+                    <div class="author-info">
+                        <div class="name">{{ review.user.get_full_name }}</div>
+                        <div class="verified"><i class="bi bi-check-circle-fill"></i> Verified Buyer</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Resources -->
+<section class="resources-section">
+    <div class="container">
+        <h2 class="section-title">Resources</h2>
+        
+        <div class="resources-tabs">
+            <div class="resource-tab active">Research</div>
+            <div class="resource-tab">Loan info</div>
+            <div class="resource-tab">Guides</div>
+        </div>
+        
+        <div class="text-center">
+            <p style="color: #666; max-width: 600px; margin: 0 auto;">
+                Access expert reviews, comparison tools, and comprehensive guides to help you make informed decisions about your next vehicle purchase.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Products</h4>
+            <ul>
+                <li><a href="#">Buy a car</a></li>
+                <li><a href="#">Sell your car</a></li>
+                <li><a href="#">Finance</a></li>
+                <li><a href="#">Insurance</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-section">
+            <h4>Resources</h4>
+            <ul>
+                <li><a href="#">Car reviews</a></li>
+                <li><a href="#">Compare cars</a></li>
+                <li><a href="#">Car rankings</a></li>
+                <li><a href="#">Blog</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-section">
+            <h4>More from TrueCar</h4>
+            <ul>
+                <li><a href="#">Military</a></li>
+                <li><a href="#">AAA</a></li>
+                <li><a href="#">USAA</a></li>
+                <li><a href="#">Trade-in</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-section">
+            <h4>About</h4>
+            <ul>
+                <li><a href="#">About us</a></li>
+                <li><a href="#">Careers</a></li>
+                <li><a href="#">Press</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="social-links">
+            <a href="#"><i class="bi bi-facebook"></i></a>
+            <a href="#"><i class="bi bi-twitter"></i></a>
+            <a href="#"><i class="bi bi-instagram"></i></a>
+            <a href="#"><i class="bi bi-linkedin"></i></a>
+            <a href="#"><i class="bi bi-youtube"></i></a>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <p>&copy; 2024 TrueCar. All rights reserved. | <a href="#" style="color: #666;">Privacy Policy</a> | <a href="#" style="color: #666;">Terms of Service</a></p>
+        <p style="margin-top: 10px; font-size: 11px;">
+            *Prices shown are for illustration purposes only. Actual prices may vary based on location, taxes, fees, and other factors.
+        </p>
+    </div>
+</footer>
+
+{% endblock %}
