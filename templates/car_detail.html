@@ -1,0 +1,1482 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ car.title }} - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: #f8f9fa;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        color: #333;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb-container {
+        background: #fff;
+        padding: 15px 0;
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+    .breadcrumb {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+
+    .breadcrumb a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+
+    .breadcrumb-separator {
+        color: #999;
+    }
+
+    .breadcrumb-current {
+        color: #666;
+    }
+
+    /* Main Container */
+    .detail-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+
+    /* Header Section */
+    .car-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 30px;
+        gap: 20px;
+    }
+
+    .car-title-section h1 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 10px;
+    }
+
+    .car-subtitle {
+        color: #666;
+        font-size: 16px;
+    }
+
+    .car-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .action-btn {
+        padding: 10px 16px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+
+    .action-btn:hover {
+        background: #f8f9fa;
+        border-color: #007bff;
+        color: #007bff;
+    }
+
+    .action-btn i {
+        font-size: 18px;
+    }
+
+    .action-btn.favorited {
+        color: #ff6b6b;
+        border-color: #ff6b6b;
+    }
+
+    /* Main Layout */
+    .detail-layout {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 30px;
+    }
+
+    /* Left Column */
+    .detail-main {
+        min-width: 0;
+    }
+
+    /* Image Gallery */
+    .image-gallery {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    .main-image {
+        width: 100%;
+        height: 500px;
+        background: #f5f5f5;
+        position: relative;
+    }
+
+    .main-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .image-badges {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        display: inline-block;
+    }
+
+    .badge-featured {
+        background: #ff6b6b;
+        color: white;
+    }
+
+    .badge-urgent {
+        background: #ffc107;
+        color: #1a1a1a;
+    }
+
+    .badge-new {
+        background: #28a745;
+        color: white;
+    }
+
+    .thumbnail-strip {
+        display: flex;
+        gap: 10px;
+        padding: 15px;
+        overflow-x: auto;
+    }
+
+    .thumbnail {
+        width: 100px;
+        height: 75px;
+        border-radius: 6px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+        flex-shrink: 0;
+    }
+
+    .thumbnail:hover {
+        border-color: #007bff;
+    }
+
+    .thumbnail.active {
+        border-color: #007bff;
+    }
+
+    .thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* AAA Banner */
+    .aaa-banner {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        padding: 20px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        color: white;
+    }
+
+    .aaa-content {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .aaa-logo {
+        width: 50px;
+        height: 50px;
+        background: white;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #1e3a8a;
+    }
+
+    .aaa-text h3 {
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+    .aaa-text p {
+        font-size: 13px;
+        opacity: 0.9;
+    }
+
+    .learn-more-btn {
+        padding: 8px 20px;
+        background: white;
+        color: #1e3a8a;
+        border: none;
+        border-radius: 20px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .learn-more-btn:hover {
+        transform: scale(1.05);
+    }
+
+    /* Tabs Navigation */
+    .tabs-nav {
+        display: flex;
+        gap: 30px;
+        border-bottom: 2px solid #e5e5e5;
+        margin-bottom: 30px;
+        background: white;
+        padding: 20px 20px 0;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .tab-btn {
+        padding: 12px 0;
+        background: none;
+        border: none;
+        font-size: 16px;
+        font-weight: 600;
+        color: #666;
+        cursor: pointer;
+        position: relative;
+        transition: color 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .tab-btn:hover {
+        color: #007bff;
+    }
+
+    .tab-btn.active {
+        color: #007bff;
+    }
+
+    .tab-btn.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #007bff;
+    }
+
+    .tab-btn i {
+        font-size: 18px;
+    }
+
+    /* Tab Content */
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    /* Vehicle Overview */
+    .overview-section {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    .overview-section h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 25px;
+    }
+
+    .overview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .overview-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .overview-icon {
+        width: 40px;
+        height: 40px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #007bff;
+        font-size: 20px;
+    }
+
+    .overview-details {
+        flex: 1;
+    }
+
+    .overview-label {
+        font-size: 12px;
+        color: #999;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 3px;
+    }
+
+    .overview-value {
+        font-size: 16px;
+        color: #1a1a1a;
+        font-weight: 600;
+    }
+
+    /* Key Highlights */
+    .highlights-section {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        margin-top: 30px;
+    }
+
+    .highlights-section h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 25px;
+    }
+
+    .highlights-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+    }
+
+    .highlight-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .highlight-item i {
+        color: #28a745;
+        font-size: 18px;
+    }
+
+    .highlight-item span {
+        font-size: 14px;
+        color: #333;
+    }
+
+    /* Pricing Banner */
+    .pricing-banner {
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        padding: 30px;
+        border-radius: 12px;
+        margin-top: 30px;
+    }
+
+    .pricing-banner h2 {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .pricing-features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+    .pricing-feature {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .pricing-feature i {
+        color: #0284c7;
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+
+    .pricing-feature-text h4 {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .pricing-feature-text p {
+        font-size: 13px;
+        color: #666;
+    }
+
+    .your-price-display {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .price-label {
+        font-size: 14px;
+        color: #666;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .price-amount {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1a1a1a;
+    }
+
+    .get-price-btn {
+        width: 100%;
+        padding: 14px;
+        background: #1a1a1a;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .get-price-btn:hover {
+        background: #333;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* Recommended Section */
+    .recommended-section {
+        margin-top: 50px;
+    }
+
+    .recommended-section h2 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 30px;
+    }
+
+    .recommended-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .recommended-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+    }
+
+    .recommended-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .recommended-card-image {
+        width: 100%;
+        height: 200px;
+        background: #f5f5f5;
+        position: relative;
+    }
+
+    .recommended-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .recommended-favorite {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+        background: rgba(255,255,255,0.95);
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .recommended-card-content {
+        padding: 20px;
+    }
+
+    .recommended-card-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #1a1a1a;
+    }
+
+    .recommended-card-subtitle {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 15px;
+    }
+
+    .recommended-card-price {
+        font-size: 22px;
+        font-weight: 700;
+        color: #007bff;
+        margin-bottom: 12px;
+    }
+
+    .recommended-card-location {
+        font-size: 13px;
+        color: #999;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-bottom: 15px;
+    }
+
+    .recommended-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 15px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .recommended-dealer {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #666;
+    }
+
+    .recommended-action {
+        padding: 6px 14px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    /* Seller Notes */
+    .seller-notes-section {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        margin-top: 30px;
+    }
+
+    .seller-notes-section h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .seller-notes-content {
+        color: #666;
+        line-height: 1.8;
+    }
+
+    .note-section {
+        margin-bottom: 20px;
+    }
+
+    .note-section h4 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 10px;
+    }
+
+    .note-section p {
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    /* Right Sidebar */
+    .detail-sidebar {
+        position: sticky;
+        top: 20px;
+        height: fit-content;
+    }
+
+    /* Price Card */
+    .price-card {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+
+    .price-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .price-header i {
+        color: #007bff;
+        font-size: 20px;
+    }
+
+    .price-header span {
+        font-size: 14px;
+        color: #666;
+    }
+
+    .price-main {
+        font-size: 36px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+    }
+
+    .price-note {
+        font-size: 12px;
+        color: #999;
+        margin-bottom: 20px;
+    }
+
+    .cta-button {
+        width: 100%;
+        padding: 14px;
+        background: #1a1a1a;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-bottom: 15px;
+    }
+
+    .cta-button:hover {
+        background: #333;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    /* EV Banner */
+    .ev-banner {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        padding: 20px;
+        border-radius: 12px;
+        color: white;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .ev-banner-image {
+        width: 100%;
+        height: 120px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 8px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .ev-banner h3 {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .ev-banner p {
+        font-size: 13px;
+        opacity: 0.9;
+        margin-bottom: 15px;
+    }
+
+    .ev-research-btn {
+        width: 100%;
+        padding: 10px;
+        background: white;
+        color: #1e3a8a;
+        border: none;
+        border-radius: 20px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .detail-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .detail-sidebar {
+            position: static;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .car-header {
+            flex-direction: column;
+        }
+
+        .car-title-section h1 {
+            font-size: 24px;
+        }
+
+        .main-image {
+            height: 300px;
+        }
+
+        .tabs-nav {
+            overflow-x: auto;
+            gap: 15px;
+        }
+
+        .overview-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .highlights-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .recommended-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<div class="breadcrumb-container">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="#">Cars Search</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="#?city={{ car.city }}">{{ car.city }}</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="#?make={{ car.make.slug }}">{{ car.make.name }}</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="#?make={{ car.make.slug}}&model={{ car.model.slug }}">{{ car.model.name }}</a>
+        <span class="breadcrumb-separator">›</span>
+        <span class="breadcrumb-current">{{ car.vin|default:"VIN" }}</span>
+    </div>
+</div>
+
+<div class="detail-container">
+    <!-- Header -->
+    <div class="car-header">
+        <div class="car-title-section">
+            <h1>{{ car.title }}</h1>
+            <div class="car-subtitle">
+                VIN: {{ car.vin|default:"Not Available" }}
+            </div>
+        </div>
+        <div class="car-actions">
+            <button class="action-btn {% if is_favorited %}favorited{% endif %}" onclick="toggleFavorite({{ car.id }}, this)">
+                <i class="bi {% if is_favorited %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+                <span>{% if is_favorited %}Liked{% else %}Like{% endif %}</span>
+            </button>
+            <button class="action-btn" onclick="shareVehicle()">
+                <i class="bi bi-share"></i>
+                <span>Share</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="detail-layout">
+        <!-- Left Column -->
+        <div class="detail-main">
+            <!-- Image Gallery -->
+            <div class="image-gallery">
+                <div class="main-image" id="mainImage">
+                    {% if primary_image %}
+                        <img src="{{ primary_image.image.url }}" alt="{{ car.title }}" id="mainImageImg">
+                    {% elif images %}
+                        <img src="{{ images.0.image.url }}" alt="{{ car.title }}" id="mainImageImg">
+                    {% else %}
+                        <img src="{% static 'images/no-car-image.jpg' %}" alt="{{ car.title }}" id="mainImageImg">
+                    {% endif %}
+                    
+                    <div class="image-badges">
+                        {% if car.is_featured %}
+                            <span class="badge badge-featured">Featured</span>
+                        {% endif %}
+                        {% if car.is_urgent %}
+                            <span class="badge badge-urgent">Urgent</span>
+                        {% endif %}
+                        {% if car.condition == 'brand_new' %}
+                            <span class="badge badge-new">Brand New</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if images.count > 1 %}
+                <div class="thumbnail-strip">
+                    {% for image in images %}
+                        <div class="thumbnail {% if forloop.first %}active{% endif %}" onclick="changeMainImage('{{ image.image.url }}', this)">
+                            <img src="{{ image.image.url }}" alt="{{ car.title }}">
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- AAA Banner -->
+            <div class="aaa-banner">
+                <div class="aaa-content">
+                    <div class="aaa-logo">AAA</div>
+                    <div class="aaa-text">
+                        <h3>Eligible A.A.A members save on select vehicles.</h3>
+                        <p>Terms apply. See dealer for details.</p>
+                    </div>
+                </div>
+                <button class="learn-more-btn">Learn More →</button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs-nav">
+                <button class="tab-btn active" onclick="switchTab('overview')">
+                    <i class="bi bi-list-ul"></i>
+                    Overview
+                </button>
+                <button class="tab-btn" onclick="switchTab('features')">
+                    <i class="bi bi-star"></i>
+                    Features
+                </button>
+                <button class="tab-btn" onclick="switchTab('specs')">
+                    <i class="bi bi-speedometer2"></i>
+                    Specs
+                </button>
+                <button class="tab-btn" onclick="switchTab('warranty')">
+                    <i class="bi bi-shield-check"></i>
+                    Warranty
+                </button>
+            </div>
+
+            <!-- Tab: Overview -->
+            <div id="tab-overview" class="tab-content active">
+                <div class="overview-section">
+                    <h2>Vehicle overview</h2>
+                    <div class="overview-grid">
+                        <div class="overview-item">
+                            <div class="overview-icon">
+                                <i class="bi bi-palette"></i>
+                            </div>
+                            <div class="overview-details">
+                                <div class="overview-label">Exterior color</div>
+                                <div class="overview-value">{{ car.exterior_color }}</div>
+                            </div>
+                        </div>
+
+                        <div class="overview-item">
+                            <div class="overview-icon">
+                                <i class="bi bi-palette-fill"></i>
+                            </div>
+                            <div class="overview-details">
+                                <div class="overview-label">Interior color</div>
+                                <div class="overview-value">{{ car.interior_color }}</div>
+                            </div>
+                        </div>
+
+                        <div class="overview-item">
+                            <div class="overview-icon">
+                                <i class="bi bi-speedometer"></i>
+                            </div>
+                            <div class="overview-details">
+                                <div class="overview-label">MPG</div>
+                                <div class="overview-value">{{ car.engine_size }}L / {{ car.get_fuel_type_display }}</div>
+                            </div>
+                        </div>
+
+                        <div class="overview-item">
+                            <div class="overview-icon">
+                                <i class="bi bi-gear"></i>
+                            </div>
+                            <div class="overview-details">
+                                <div class="overview-label">Transmission</div>
+                                <div class="overview-value">{{ car.get_transmission_display }}</div>
+                            </div>
+                        </div>
+
+                        <div class="overview-item">
+                            <div class="overview-icon">
+                                <i class="bi bi-fuel-pump"></i>
+                            </div>
+                            <div class="overview-details">
+                                <div class="overview-label">Drivetrain</div>
+                                <div class="overview-value">{{ car.get_drive_type_display }}</div>
+                            </div>
+                        </div>
+
+                        <div class="overview-item">
+                            <div class="overview-icon">
+                                <i class="bi bi-car-front"></i>
+                            </div>
+                            <div class="overview-details">
+                                <div class="overview-label">Body type</div>
+                                <div class="overview-value">{{ car.get_body_type_display }}</div>
+                            </div>
+                        </div>
+
+                        <div class="overview-item">
+                            <div class="overview-icon">
+                                <i class="bi bi-engine"></i>
+                            </div>
+                            <div class="overview-details">
+                                <div class="overview-label">Engine</div>
+                                <div class="overview-value">{{ car.engine_size }}L {{ car.get_fuel_type_display }}</div>
+                            </div>
+                        </div>
+
+                        <div class="overview-item">
+                            <div class="overview-icon">
+                                <i class="bi bi-geo-alt"></i>
+                            </div>
+                            <div class="overview-details">
+                                <div class="overview-label">Location</div>
+                                <div class="overview-value">{{ car.city }}, {{ car.country }}</div>
+                            </div>
+                        </div>
+
+                        <div class="overview-item">
+                            <div class="overview-icon">
+                                <i class="bi bi-fuel-pump-diesel"></i>
+                            </div>
+                            <div class="overview-details">
+                                <div class="overview-label">Fuel type</div>
+                                <div class="overview-value">{{ car.get_fuel_type_display }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Highlights -->
+                <div class="highlights-section">
+                    <h2>Key highlights</h2>
+                    <div class="highlights-grid">
+                        {% for feature in features_list %}
+                            <div class="highlight-item">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>{{ feature }}</span>
+                            </div>
+                        {% empty %}
+                            <div class="highlight-item">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Apple CarPlay / Android Auto</span>
+                            </div>
+                            <div class="highlight-item">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Garage Door Opener</span>
+                            </div>
+                            <div class="highlight-item">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Keyless Ignition</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Pricing Banner -->
+                <div class="pricing-banner">
+                    <h2>Know your price and save time at the dealership!</h2>
+                    <div class="pricing-features">
+                        <div class="pricing-feature">
+                            <i class="bi bi-unlock"></i>
+                            <div class="pricing-feature-text">
+                                <h4>Unlock dealer pricing</h4>
+                                <p>Calculate your up-front price with taxes and fees</p>
+                            </div>
+                        </div>
+                        <div class="pricing-feature">
+                            <i class="bi bi-calculator"></i>
+                            <div class="pricing-feature-text">
+                                <h4>Customize your payments</h4>
+                                <p>Schedule an appointment to view the car at the dealership</p>
+                            </div>
+                        </div>
+                        <div class="pricing-feature">
+                            <i class="bi bi-calendar-check"></i>
+                            <div class="pricing-feature-text">
+                                <h4>Schedule an appointment</h4>
+                                <p>to view the car at the dealership</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="your-price-display">
+                        <div class="price-label">
+                            <i class="bi bi-cash-stack"></i>
+                            Your price
+                        </div>
+                        <div class="price-amount">KES {{ car.price|floatformat:0|intcomma }}</div>
+                    </div>
+                    <button class="get-price-btn" onclick="openInquiryModal()">Get your actual price</button>
+                </div>
+            </div>
+
+            <!-- Tab: Features -->
+            <div id="tab-features" class="tab-content">
+                <div class="overview-section">
+                    <h2>Features & Equipment</h2>
+                    <div class="highlights-grid">
+                        {% for feature in features_list %}
+                            <div class="highlight-item">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>{{ feature }}</span>
+                            </div>
+                        {% empty %}
+                            <div class="highlight-item">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>No features listed</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Specs -->
+            <div id="tab-specs" class="tab-content">
+                <div class="overview-section">
+                    <h2>Specifications</h2>
+                    {% if specs_by_category %}
+                        {% for category, specs in specs_by_category.items %}
+                            <h3 style="font-size: 18px; margin: 25px 0 15px; color: #007bff;">{{ category }}</h3>
+                            <div class="overview-grid">
+                                {% for spec in specs %}
+                                    <div class="overview-item">
+                                        <div class="overview-icon">
+                                            <i class="bi bi-info-circle"></i>
+                                        </div>
+                                        <div class="overview-details">
+                                            <div class="overview-label">{{ spec.name }}</div>
+                                            <div class="overview-value">{{ spec.value }}</div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p style="color: #666;">No detailed specifications available.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Tab: Warranty -->
+            <div id="tab-warranty" class="tab-content">
+                <div class="overview-section">
+                    <h2>Warranty Information</h2>
+                    {% if latest_inspection %}
+                        <div class="overview-grid">
+                            <div class="overview-item">
+                                <div class="overview-icon">
+                                    <i class="bi bi-shield-check"></i>
+                                </div>
+                                <div class="overview-details">
+                                    <div class="overview-label">Inspection Date</div>
+                                    <div class="overview-value">{{ latest_inspection.inspection_date }}</div>
+                                </div>
+                            </div>
+                            <div class="overview-item">
+                                <div class="overview-icon">
+                                    <i class="bi bi-clipboard-check"></i>
+                                </div>
+                                <div class="overview-details">
+                                    <div class="overview-label">Overall Condition</div>
+                                    <div class="overview-value">{{ latest_inspection.get_overall_condition_display }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <h4 style="font-size: 16px; margin-bottom: 10px;">Inspector Notes:</h4>
+                            <p style="color: #666; line-height: 1.7;">{{ latest_inspection.notes }}</p>
+                        </div>
+                    {% else %}
+                        <p style="color: #666;">No inspection report available for this vehicle.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Seller Notes -->
+            <div class="seller-notes-section">
+                <h2>Seller Notes</h2>
+                <div class="seller-notes-content">
+                    {% if car.description %}
+                        <div class="note-section">
+                            <p>{{ car.description|linebreaks }}</p>
+                        </div>
+                    {% else %}
+                        <div class="note-section">
+                            <h4>About This Vehicle</h4>
+                            <p>Contact the seller for more detailed information about this {{ car.year }} {{ car.make.name }} {{ car.model.name }}.</p>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="note-section">
+                        <h4>Condition</h4>
+                        <p><strong>{{ car.get_condition_display }}</strong> - Mileage: {{ car.mileage|intcomma }} km</p>
+                    </div>
+                    
+                    {% if car.negotiable %}
+                        <div class="note-section">
+                            <h4>Price</h4>
+                            <p>The price is negotiable. Contact the seller to discuss.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recommended Section -->
+            <div class="recommended-section">
+                <h2>Recommended for you</h2>
+                <div class="recommended-grid">
+                    {% for similar_car in similar_cars %}
+                        <div class="recommended-card">
+                            <div class="recommended-card-image">
+                                {% if similar_car.images.all %}
+                                    <img src="{{ similar_car.images.first.image.url }}" alt="{{ similar_car.title }}">
+                                {% else %}
+                                    <img src="{% static 'images/no-car-image.jpg' %}" alt="{{ similar_car.title }}">
+                                {% endif %}
+                                <button class="recommended-favorite" onclick="toggleFavorite({{ similar_car.id }}, this)">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                            </div>
+                            <div class="recommended-card-content">
+                                <div class="recommended-card-title">{{ similar_car.year }} {{ similar_car.make.name }} {{ similar_car.model.name }}</div>
+                                <div class="recommended-card-subtitle">{{ similar_car.get_body_type_display }}</div>
+                                <div class="recommended-card-price">
+                                    KES {{ similar_car.price|floatformat:0|intcomma }}
+                                    {% if similar_car.negotiable %}
+                                        <small style="font-size: 13px; color: #666; font-weight: 400;">est. lease</small>
+                                    {% endif %}
+                                </div>
+                                <div class="recommended-card-location">
+                                    <i class="bi bi-geo-alt"></i>
+                                    {{ similar_car.city }}, {{ similar_car.country }}
+                                </div>
+                                <div class="recommended-card-footer">
+                                    <div class="recommended-dealer">
+                                        {% if similar_car.dealer %}
+                                            {{ similar_car.dealer.business_name|truncatechars:20 }}
+                                        {% else %}
+                                            Private Seller
+                                        {% endif %}
+                                    </div>
+                                    <a href="{% url 'car_detail' similar_car.slug %}" class="recommended-action">
+                                        <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p style="color: #666; padding: 20px;">No similar cars found at the moment.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="detail-sidebar">
+            <!-- Price Card -->
+            <div class="price-card">
+                <div class="price-header">
+                    <i class="bi bi-tag"></i>
+                    <span>Your price</span>
+                </div>
+                <div class="price-main">
+                    KES {{ car.price|floatformat:0|intcomma }}
+                </div>
+                <div class="price-note">
+                    {% if car.negotiable %}(Price Negotiable){% else %}(Fixed Price){% endif %}<br>
+                    without sales taxes & fees
+                </div>
+                <button class="cta-button" onclick="openInquiryModal()">See your actual price</button>
+            </div>
+
+            <!-- EV Banner -->
+            <div class="ev-banner">
+                <div class="ev-banner-image">
+                    <i class="bi bi-ev-station" style="font-size: 48px;"></i>
+                </div>
+                <h3>There are over 60 EV models.</h3>
+                <p>Which is right for you?</p>
+                <button class="ev-research-btn">Visit our EV research center</button>
+            </div>
+
+            <!-- Seller Info Card -->
+            <div class="price-card">
+                <h3 style="font-size: 18px; margin-bottom: 15px;">
+                    <i class="bi bi-person-circle"></i> Seller Information
+                </h3>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-weight: 600; margin-bottom: 5px;">
+                        {% if car.dealer %}
+                            {{ car.dealer.business_name }}
+                        {% else %}
+                            {{ car.seller.get_full_name|default:car.seller.username }}
+                        {% endif %}
+                    </div>
+                    <div style="font-size: 14px; color: #666;">
+                        <i class="bi bi-geo-alt"></i> {{ car.location }}
+                    </div>
+                    {% if seller_cars_count > 0 %}
+                        <div style="font-size: 13px; color: #999; margin-top: 5px;">
+                            {{ seller_cars_count }} more listing{{ seller_cars_count|pluralize }}
+                        </div>
+                    {% endif %}
+                </div>
+                {% if car.dealer %}
+                    <div style="font-size: 13px; color: #666; margin-bottom: 15px;">
+                        <i class="bi bi-telephone"></i> {{ car.dealer.phone }}<br>
+                        <i class="bi bi-envelope"></i> {{ car.dealer.email }}
+                    </div>
+                {% endif %}
+                <button class="cta-button" onclick="openInquiryModal()">
+                    <i class="bi bi-chat-dots"></i> Contact Seller
+                </button>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="price-card">
+                <h3 style="font-size: 18px; margin-bottom: 15px;">
+                    <i class="bi bi-graph-up"></i> Vehicle Stats
+                </h3>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
+                        <span style="color: #666;">Views</span>
+                        <span style="font-weight: 600;">{{ car.views }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
+                        <span style="color: #666;">Inquiries</span>
+                        <span style="font-weight: 600;">{{ car.inquiries }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 10px 0;">
+                        <span style="color: #666;">Listed</span>
+                        <span style="font-weight: 600;">{{ car.created_at|timesince }} ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Inquiry Modal -->
+<div id="inquiryModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="font-size: 24px; font-weight: 700;">Contact Seller</h2>
+            <button onclick="closeInquiryModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+        </div>
+        
+        <form method="post" action="{% url 'send_inquiry' car.slug %}">
+            {% csrf_token %}
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Name</label>
+                <input type="text" name="name" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;" value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Email</label>
+                <input type="email" name="email" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;" value="{% if user.is_authenticated %}{{ user.email }}{% endif %}">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Phone</label>
+                <input type="tel" name="phone" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;" value="{% if user.is_authenticated %}{{ user.phone_number }}{% endif %}">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Message</label>
+                <textarea name="message" rows="5" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">I'm interested in this {{ car.year }} {{ car.make.name }} {{ car.model.name }}. Please contact me with more information.</textarea>
+            </div>
+            
+            <button type="submit" style="width: 100%; padding: 14px; background: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                Send Inquiry
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+// Tab Switching
+function switchTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById('tab-' + tabName).classList.add('active');
+    event.target.closest('.tab-btn').classList.add('active');
+}
+
+// Image Gallery
+function changeMainImage(imageUrl, thumbnail) {
+    document.getElementById('mainImageImg').src = imageUrl;
+    
+    // Update active thumbnail
+    document.querySelectorAll('.thumbnail').forEach(t => {
+        t.classList.remove('active');
+    });
+    thumbnail.classList.add('active');
+}
+
+// Favorite Toggle
+function toggleFavorite(carId, button) {
+    {% if user.is_authenticated %}
+        fetch(`/cars/${carId}/favorite/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            const icon = button.querySelector('i');
+            if (data.status === 'added') {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+                button.classList.add('favorited');
+            } else {
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+                button.classList.remove('favorited');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to update favorite. Please try again.');
+        });
+    {% else %}
+        window.location.href = '/accounts/login/?next={{ request.path }}';
+    {% endif %}
+}
+
+// Share Vehicle
+function shareVehicle() {
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ car.title }}',
+            text: 'Check out this {{ car.year }} {{ car.make.name }} {{ car.model.name }}',
+            url: window.location.href
+        }).catch(err => console.log('Error sharing:', err));
+    } else {
+        // Fallback: Copy to clipboard
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            alert('Link copied to clipboard!');
+        });
+    }
+}
+
+// Inquiry Modal
+function openInquiryModal() {
+    document.getElementById('inquiryModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeInquiryModal() {
+    document.getElementById('inquiryModal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// Close modal on background click
+document.getElementById('inquiryModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeInquiryModal();
+    }
+});
+
+// Get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

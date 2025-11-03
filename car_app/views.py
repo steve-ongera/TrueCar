@@ -197,177 +197,336 @@ def search_cars(request):
     return render(request, 'search_results.html', context)
 
 
-def car_detail(request, pk):
-    """
-    Display detailed information about a specific car
-    """
-    car = get_object_or_404(
-        Car.objects.select_related(
-            'make', 'model', 'body_style', 'fuel_type', 'transmission'
-        ).prefetch_related('images', 'reviews'),
-        pk=pk,
-        is_active=True
-    )
-    
-    # Get related cars (same make or model)
-    related_cars = Car.objects.filter(
-        is_active=True
-    ).filter(
-        Q(make=car.make) | Q(model=car.model)
-    ).exclude(pk=car.pk).select_related(
-        'make', 'model', 'body_style'
-    )[:6]
-    
-    # Get reviews for this car
-    reviews = car.reviews.filter(
-        is_approved=True
-    ).select_related('user').order_by('-created_at')
-    
-    context = {
-        'car': car,
-        'related_cars': related_cars,
-        'reviews': reviews,
-    }
-    
-    return render(request, 'car_detail.html', context)
-
-
 # Import Q for complex queries
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 
-def car_listings(request):
-    """Car listings with filters"""
+from django.shortcuts import render
+from django.db.models import Q, Count, Min, Max
+from django.core.paginator import Paginator
+from .models import Car, CarMake, CarModel, Favorite
+from decimal import Decimal
+
+
+def car_listing(request):
+    """Car listing view with filters and search"""
+    
+    # Get all active cars
     cars = Car.objects.filter(status='active').select_related(
         'make', 'model', 'seller', 'dealer'
     ).prefetch_related('images')
     
-    # Filters
-    condition = request.GET.get('condition')
-    make_id = request.GET.get('make')
-    model_id = request.GET.get('model')
-    min_price = request.GET.get('min_price')
-    max_price = request.GET.get('max_price')
-    min_year = request.GET.get('min_year')
-    max_year = request.GET.get('max_year')
-    body_type = request.GET.get('body_type')
-    fuel_type = request.GET.get('fuel_type')
-    transmission = request.GET.get('transmission')
-    city = request.GET.get('city')
-    keyword = request.GET.get('q')
+    # Search query
+    search_query = request.GET.get('q', '')
+    if search_query:
+        cars = cars.filter(
+            Q(title__icontains=search_query) |
+            Q(make__name__icontains=search_query) |
+            Q(model__name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
     
-    if condition:
-        cars = cars.filter(condition=condition)
+    # Filter by make
+    make_filter = request.GET.get('make', '')
+    if make_filter:
+        cars = cars.filter(make__slug=make_filter)
     
-    if make_id:
-        cars = cars.filter(make_id=make_id)
+    # Filter by model
+    model_filter = request.GET.get('model', '')
+    if model_filter:
+        cars = cars.filter(model__slug=model_filter)
     
-    if model_id:
-        cars = cars.filter(model_id=model_id)
-    
-    if min_price:
-        cars = cars.filter(price__gte=min_price)
-    
-    if max_price:
-        cars = cars.filter(price__lte=max_price)
-    
-    if min_year:
-        cars = cars.filter(year__gte=min_year)
-    
-    if max_year:
-        cars = cars.filter(year__lte=max_year)
-    
+    # Filter by body type
+    body_type = request.GET.get('body_type', '')
     if body_type:
         cars = cars.filter(body_type=body_type)
     
+    # Filter by condition
+    condition = request.GET.get('condition', '')
+    if condition:
+        cars = cars.filter(condition=condition)
+    
+    # Filter by fuel type
+    fuel_type = request.GET.get('fuel_type', '')
     if fuel_type:
         cars = cars.filter(fuel_type=fuel_type)
     
+    # Filter by transmission
+    transmission = request.GET.get('transmission', '')
     if transmission:
         cars = cars.filter(transmission=transmission)
     
-    if city:
-        cars = cars.filter(city__icontains=city)
+    # Filter by year range
+    year_min = request.GET.get('year_min', '')
+    year_max = request.GET.get('year_max', '')
+    if year_min:
+        cars = cars.filter(year__gte=year_min)
+    if year_max:
+        cars = cars.filter(year__lte=year_max)
     
-    if keyword:
-        cars = cars.filter(
-            Q(title__icontains=keyword) |
-            Q(make__name__icontains=keyword) |
-            Q(model__name__icontains=keyword) |
-            Q(description__icontains=keyword)
-        )
+    # Filter by price range
+    price_min = request.GET.get('price_min', '')
+    price_max = request.GET.get('price_max', '')
+    if price_min:
+        cars = cars.filter(price__gte=Decimal(price_min))
+    if price_max:
+        cars = cars.filter(price__lte=Decimal(price_max))
+    
+    # Filter by mileage range
+    mileage_min = request.GET.get('mileage_min', '')
+    mileage_max = request.GET.get('mileage_max', '')
+    if mileage_min:
+        cars = cars.filter(mileage__gte=mileage_min)
+    if mileage_max:
+        cars = cars.filter(mileage__lte=mileage_max)
+    
+    # Filter by city
+    city_filter = request.GET.get('city', '')
+    if city_filter:
+        cars = cars.filter(city__iexact=city_filter)
     
     # Sorting
-    sort = request.GET.get('sort', '-created_at')
-    cars = cars.order_by(sort)
+    sort_by = request.GET.get('sort', '-created_at')
+    valid_sorts = [
+        '-created_at', 'price', '-price', 'mileage', '-mileage', 
+        'year', '-year', 'title', '-title'
+    ]
+    if sort_by in valid_sorts:
+        cars = cars.order_by(sort_by)
     
-    # Pagination
-    paginator = Paginator(cars, 24)
-    page = request.GET.get('page')
-    cars = paginator.get_page(page)
+    # Get filter options for sidebar
+    makes = CarMake.objects.all().annotate(
+        car_count=Count('car', filter=Q(car__status='active'))
+    ).filter(car_count__gt=0)
     
-    # Filter options
-    makes = CarMake.objects.all().order_by('name')
-    price_range = Car.objects.filter(status='active').aggregate(
+    body_types = Car.BODY_TYPE_CHOICES
+    conditions = Car.CONDITION_CHOICES
+    fuel_types = Car.FUEL_TYPE_CHOICES
+    transmissions = Car.TRANSMISSION_CHOICES
+    
+    # Get price range
+    price_range = cars.aggregate(
         min_price=Min('price'),
         max_price=Max('price')
     )
-    year_range = Car.objects.filter(status='active').aggregate(
+    
+    # Get year range
+    year_range = cars.aggregate(
         min_year=Min('year'),
         max_year=Max('year')
     )
     
+    # Get unique cities
+    cities = cars.values_list('city', flat=True).distinct().order_by('city')
+    
+    # Get user favorites if authenticated
+    favorite_car_ids = []
+    if request.user.is_authenticated:
+        favorite_car_ids = list(
+            Favorite.objects.filter(user=request.user).values_list('car_id', flat=True)
+        )
+    
+    # Pagination
+    paginator = Paginator(cars, 12)  # 12 cars per page
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    
     context = {
-        'cars': cars,
+        'cars': page_obj,
+        'page_obj': page_obj,
+        'total_cars': paginator.count,
         'makes': makes,
+        'body_types': body_types,
+        'conditions': conditions,
+        'fuel_types': fuel_types,
+        'transmissions': transmissions,
+        'cities': cities,
         'price_range': price_range,
         'year_range': year_range,
-        'conditions': Car.CONDITION_CHOICES,
-        'body_types': Car.BODY_TYPE_CHOICES,
-        'fuel_types': Car.FUEL_TYPE_CHOICES,
-        'transmissions': Car.TRANSMISSION_CHOICES,
+        'favorite_car_ids': favorite_car_ids,
+        'search_query': search_query,
+        'current_filters': {
+            'make': make_filter,
+            'model': model_filter,
+            'body_type': body_type,
+            'condition': condition,
+            'fuel_type': fuel_type,
+            'transmission': transmission,
+            'year_min': year_min,
+            'year_max': year_max,
+            'price_min': price_min,
+            'price_max': price_max,
+            'mileage_min': mileage_min,
+            'mileage_max': mileage_max,
+            'city': city_filter,
+            'sort': sort_by,
+        }
     }
     
     return render(request, 'listings.html', context)
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.db.models import Q
+from .models import (
+    Car, CarImage, CarSpecification, InspectionReport, 
+    Favorite, Review, Inquiry
+)
+from decimal import Decimal
+import random
+
 
 def car_detail(request, slug):
-    """Car detail page"""
+    """Car detail view with all related information"""
+    
+    # Get car with related data
     car = get_object_or_404(
-        Car.objects.select_related('make', 'model', 'seller', 'dealer').prefetch_related(
-            'images', 'specifications', 'reviews'
-        ),
+        Car.objects.select_related('make', 'model', 'seller', 'dealer')
+        .prefetch_related('images', 'specifications', 'reviews', 'inspections'),
         slug=slug
     )
     
-    # Increment views
-    car.views += 1
-    car.save(update_fields=['views'])
+    # Increment view count
+    Car.objects.filter(id=car.id).update(views=models.F('views') + 1)
     
-    # Similar cars
-    similar_cars = Car.objects.filter(
-        make=car.make,
-        status='active'
-    ).exclude(id=car.id).select_related('make', 'model').prefetch_related('images')[:4]
+    # Get all images
+    images = car.images.all().order_by('order', '-is_primary')
+    primary_image = images.filter(is_primary=True).first() or images.first()
     
-    # Reviews
-    reviews = car.reviews.filter(is_approved=True).select_related('reviewer')[:10]
+    # Get specifications grouped by category
+    specifications = car.specifications.all().order_by('category', 'order')
+    specs_by_category = {}
+    for spec in specifications:
+        category = spec.category or 'General'
+        if category not in specs_by_category:
+            specs_by_category[category] = []
+        specs_by_category[category].append(spec)
     
-    # Check if favorited
+    # Get reviews
+    reviews = car.reviews.filter(is_approved=True).order_by('-created_at')[:5]
+    average_rating = car.average_rating
+    total_reviews = car.reviews.filter(is_approved=True).count()
+    
+    # Check if user has favorited
     is_favorited = False
     if request.user.is_authenticated:
         is_favorited = Favorite.objects.filter(user=request.user, car=car).exists()
     
+    # Get inspection reports
+    inspections = car.inspections.all().order_by('-inspection_date')
+    latest_inspection = inspections.first()
+    
+    # Parse features
+    features_list = []
+    if car.features:
+        features_list = [f.strip() for f in car.features.split(',') if f.strip()]
+    
+    # Get recommended/similar cars
+    similar_cars = Car.objects.filter(
+        status='active'
+    ).filter(
+        Q(make=car.make) | Q(body_type=car.body_type)
+    ).exclude(
+        id=car.id
+    ).select_related(
+        'make', 'model'
+    ).prefetch_related(
+        'images'
+    )[:4]
+    
+    # Calculate potential savings (mock calculation)
+    msrp = car.price * Decimal('1.15')  # Mock MSRP as 15% higher
+    savings = msrp - car.price
+    
+    # Get seller info
+    seller_cars_count = Car.objects.filter(
+        seller=car.seller, 
+        status='active'
+    ).exclude(id=car.id).count()
+    
     context = {
         'car': car,
-        'similar_cars': similar_cars,
+        'images': images,
+        'primary_image': primary_image,
+        'specifications': specifications,
+        'specs_by_category': specs_by_category,
         'reviews': reviews,
+        'average_rating': average_rating,
+        'total_reviews': total_reviews,
         'is_favorited': is_favorited,
+        'inspections': inspections,
+        'latest_inspection': latest_inspection,
+        'features_list': features_list,
+        'similar_cars': similar_cars,
+        'msrp': msrp,
+        'savings': savings,
+        'seller_cars_count': seller_cars_count,
     }
     
     return render(request, 'car_detail.html', context)
 
+
+@login_required
+def send_inquiry(request, slug):
+    """Send inquiry about a car"""
+    if request.method == 'POST':
+        car = get_object_or_404(Car, slug=slug)
+        
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        message = request.POST.get('message')
+        
+        inquiry = Inquiry.objects.create(
+            car=car,
+            sender=request.user,
+            recipient=car.seller,
+            name=name,
+            email=email,
+            phone=phone,
+            message=message
+        )
+        
+        # Increment inquiry count
+        Car.objects.filter(id=car.id).update(inquiries=F('inquiries') + 1)
+        
+        messages.success(request, 'Your inquiry has been sent successfully!')
+        return redirect('car_detail', slug=slug)
+    
+    return redirect('car_detail', slug=slug)
+
+
+@login_required
+def add_review(request, slug):
+    """Add a review for a car"""
+    if request.method == 'POST':
+        car = get_object_or_404(Car, slug=slug)
+        
+        # Check if user already reviewed
+        if Review.objects.filter(car=car, reviewer=request.user).exists():
+            messages.warning(request, 'You have already reviewed this car.')
+            return redirect('car_detail', slug=slug)
+        
+        rating = request.POST.get('rating')
+        title = request.POST.get('title')
+        comment = request.POST.get('comment')
+        
+        review = Review.objects.create(
+            review_type='car',
+            car=car,
+            reviewer=request.user,
+            rating=rating,
+            title=title,
+            comment=comment,
+            is_approved=False  # Requires admin approval
+        )
+        
+        messages.success(request, 'Your review has been submitted and is awaiting approval.')
+        return redirect('car_detail', slug=slug)
+    
+    return redirect('car_detail', slug=slug)
 
 # ============= CHECKOUT & PAYMENT =============
 

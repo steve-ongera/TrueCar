@@ -5,14 +5,20 @@ from . import views
 urlpatterns = [
     # Home & Listings
     path('', views.home, name='home'),
-    path('cars/', views.car_listings, name='car_listings'),
+    path('cars/', views.car_listing, name='car_listings'),
     path('cars/<slug:slug>/', views.car_detail, name='car_detail'),
+
+    # Send inquiry
+    path('<slug:slug>/inquiry/', views.send_inquiry, name='send_inquiry'),
+    
+    # Add review
+    path('<slug:slug>/review/', views.add_review, name='add_review'),
     
     # Search & Filters
-    path('search/', views.car_listings, name='search'),
-    path('brand-new/', views.car_listings, name='brand_new'),
-    path('used-cars/', views.car_listings, name='used_cars'),
-    path('crashed-cars/', views.car_listings, name='crashed_cars'),
+    path('search/', views.car_listing, name='search'),
+    path('brand-new/', views.car_listing, name='brand_new'),
+    path('used-cars/', views.car_listing, name='used_cars'),
+    path('crashed-cars/', views.car_listing, name='crashed_cars'),
     
     # Checkout & Orders
     path('checkout/<int:car_id>/', views.checkout, name='checkout'),
