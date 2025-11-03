@@ -1,0 +1,72 @@
+{% extends 'auth_base.html' %}
+
+{% block title %}Login - TrueCar{% endblock %}
+
+{% block auth_subtitle %}Sign in to your account{% endblock %}
+
+{% block auth_content %}
+<h2 class="auth-title">Welcome Back</h2>
+<p class="auth-description">Sign in to access your account and continue your car search.</p>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<form method="post" novalidate>
+    {% csrf_token %}
+    
+    {% if form.non_field_errors %}
+        <div class="alert alert-error">
+            {% for error in form.non_field_errors %}
+                {{ error }}
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <div class="form-group">
+        <label class="form-label" for="{{ form.username.id_for_label }}">Username or Email</label>
+        <input type="text" 
+               name="username" 
+               id="{{ form.username.id_for_label }}"
+               class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+               placeholder="Enter your username or email"
+               value="{{ form.username.value|default:'' }}"
+               required>
+        {% for error in form.username.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+    </div>
+    
+    <div class="form-group">
+        <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+        <div class="password-toggle">
+            <input type="password" 
+                   name="password" 
+                   id="{{ form.password.id_for_label }}"
+                   class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                   placeholder="Enter your password"
+                   required>
+            <i class="bi bi-eye-slash password-toggle-icon"></i>
+        </div>
+        {% for error in form.password.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+    </div>
+    
+    <div class="form-group" style="text-align: right;">
+        <a href="{% url 'password_reset' %}" class="auth-link">Forgot your password?</a>
+    </div>
+    
+    <button type="submit" class="btn-auth">
+        <i class="bi bi-box-arrow-in-right"></i> Sign In
+    </button>
+</form>
+
+<div class="auth-footer">
+    <p>Don't have an account? <a href="{% url 'register' %}" class="auth-link">Create one here</a></p>
+</div>
+{% endblock %}

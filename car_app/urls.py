@@ -1,5 +1,6 @@
 # cars/urls.py
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
@@ -41,4 +42,12 @@ urlpatterns = [
     # User Actions
     path('favorite/<int:car_id>/', views.toggle_favorite, name='toggle_favorite'),
     path('inquiry/<int:car_id>/', views.send_inquiry, name='send_inquiry'),
+
+    # Authentication URLs
+    path('login/', views.LoginView.as_view(), name='login'),
+    path('register/', views.RegisterView.as_view(), name='register'),
+    path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('profile/', views.profile_view, name='profile'),
+    
+
 ]

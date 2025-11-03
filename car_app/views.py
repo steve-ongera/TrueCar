@@ -1038,3 +1038,118 @@ def my_orders(request):
     
     context = {'orders': orders}
     return render(request, 'my_orders.html', context)
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.views.generic import View
+from django.utils.decorators import method_decorator
+from django.db import transaction
+from .models import User, Dealer
+from .forms import LoginForm, RegisterForm, UserUpdateForm
+import re
+
+class LoginView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('home')
+        
+        form = LoginForm()
+        return render(request, 'auth/login.html', {'form': form})
+    
+    def post(self, request):
+        if request.user.is_authenticated:
+            return redirect('home')
+        
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            
+            if user is not None:
+                login(request, user)
+                messages.success(request, f'Welcome back, {user.username}!')
+                
+                # Redirect to next page if specified
+                next_page = request.GET.get('next')
+                if next_page:
+                    return redirect(next_page)
+                return redirect('home')
+            else:
+                messages.error(request, 'Invalid username or password.')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+        
+        return render(request, 'auth/login.html', {'form': form})
+
+class RegisterView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('home')
+        
+        form = RegisterForm()
+        return render(request, 'auth/register.html', {'form': form})
+    
+    def post(self, request):
+        if request.user.is_authenticated:
+            return redirect('home')
+        
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    user = form.save(commit=False)
+                    user.set_password(form.cleaned_data['password1'])
+                    user.save()
+                    
+                    # If user registered as dealer, create dealer profile
+                    if user.user_type == 'dealer':
+                        dealer = Dealer.objects.create(
+                            user=user,
+                            business_name=form.cleaned_data.get('business_name', ''),
+                            phone=form.cleaned_data.get('phone', ''),
+                            email=form.cleaned_data.get('email', ''),
+                            address=form.cleaned_data.get('address', ''),
+                            city=form.cleaned_data.get('city', ''),
+                            country=form.cleaned_data.get('country', 'Kenya')
+                        )
+                    
+                    # Log the user in
+                    login(request, user)
+                    messages.success(request, f'Account created successfully! Welcome to TrueCar, {user.username}!')
+                    
+                    # Redirect based on user type
+                    if user.user_type == 'dealer':
+                        return redirect('dealer_dashboard')
+                    else:
+                        return redirect('home')
+                        
+            except Exception as e:
+                messages.error(request, 'An error occurred during registration. Please try again.')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+        
+        return render(request, 'auth/register.html', {'form': form})
+
+class LogoutView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        logout(request)
+        messages.success(request, 'You have been successfully logged out.')
+        return redirect('home')
+
+@login_required
+def profile_view(request):
+    if request.method == 'POST':
+        form = UserUpdateForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated successfully!')
+            return redirect('profile')
+    else:
+        form = UserUpdateForm(instance=request.user)
+    
+    return render(request, 'auth/profile.html', {'form': form})

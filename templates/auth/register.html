@@ -1,0 +1,178 @@
+{% extends 'auth_base.html' %}
+
+{% block title %}Register - TrueCar{% endblock %}
+
+{% block auth_subtitle %}Create your TrueCar account{% endblock %}
+
+{% block auth_content %}
+<h2 class="auth-title">Join TrueCar</h2>
+<p class="auth-description">Create an account to start buying or selling cars.</p>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<form method="post" novalidate>
+    {% csrf_token %}
+    
+    {% if form.non_field_errors %}
+        <div class="alert alert-error">
+            {% for error in form.non_field_errors %}
+                {{ error }}
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <!-- User Type Selection -->
+    <div class="form-group">
+        <label class="form-label">I want to:</label>
+        <div class="user-type-selector">
+            {% for choice in form.user_type %}
+                <div class="user-type-option {% if choice.data.value == form.user_type.value %}selected{% endif %}">
+                    {{ choice.tag }}
+                    <label class="user-type-label" for="{{ choice.id_for_label }}">
+                        {{ choice.choice_label }}
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+        {% for error in form.user_type.errors %}
+            <div class="invalid-feedback" style="display: block;">{{ error }}</div>
+        {% endfor %}
+    </div>
+    
+    <!-- Dealer Fields (initially hidden) -->
+    <div id="dealer-fields" style="display: none;">
+        <div class="form-group">
+            <label class="form-label" for="{{ form.business_name.id_for_label }}">Business Name</label>
+            <input type="text" 
+                   name="business_name" 
+                   id="{{ form.business_name.id_for_label }}"
+                   class="form-control {% if form.business_name.errors %}is-invalid{% endif %}"
+                   placeholder="Enter your business name"
+                   value="{{ form.business_name.value|default:'' }}">
+            {% for error in form.business_name.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Basic Information -->
+    <div class="form-group">
+        <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
+        <input type="text" 
+               name="username" 
+               id="{{ form.username.id_for_label }}"
+               class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+               placeholder="Choose a username"
+               value="{{ form.username.value|default:'' }}"
+               required>
+        {% for error in form.username.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+    </div>
+    
+    <div class="form-group">
+        <label class="form-label" for="{{ form.email.id_for_label }}">Email Address</label>
+        <input type="email" 
+               name="email" 
+               id="{{ form.email.id_for_label }}"
+               class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+               placeholder="Enter your email"
+               value="{{ form.email.value|default:'' }}"
+               required>
+        {% for error in form.email.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+    </div>
+    
+    <div class="form-group">
+        <label class="form-label" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+        <input type="tel" 
+               name="phone_number" 
+               id="{{ form.phone_number.id_for_label }}"
+               class="form-control {% if form.phone_number.errors %}is-invalid{% endif %}"
+               placeholder="e.g., +254712345678"
+               value="{{ form.phone_number.value|default:'' }}"
+               required>
+        {% for error in form.phone_number.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+    </div>
+    
+    <!-- Password Fields -->
+    <div class="form-group">
+        <label class="form-label" for="{{ form.password1.id_for_label }}">Password</label>
+        <div class="password-toggle">
+            <input type="password" 
+                   name="password1" 
+                   id="{{ form.password1.id_for_label }}"
+                   class="form-control {% if form.password1.errors %}is-invalid{% endif %}"
+                   placeholder="Create a password"
+                   required>
+            <i class="bi bi-eye-slash password-toggle-icon"></i>
+        </div>
+        {% for error in form.password1.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+    </div>
+    
+    <div class="form-group">
+        <label class="form-label" for="{{ form.password2.id_for_label }}">Confirm Password</label>
+        <div class="password-toggle">
+            <input type="password" 
+                   name="password2" 
+                   id="{{ form.password2.id_for_label }}"
+                   class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
+                   placeholder="Confirm your password"
+                   required>
+            <i class="bi bi-eye-slash password-toggle-icon"></i>
+        </div>
+        {% for error in form.password2.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+    </div>
+    
+    <button type="submit" class="btn-auth">
+        <i class="bi bi-person-plus"></i> Create Account
+    </button>
+</form>
+
+<div class="auth-footer">
+    <p>Already have an account? <a href="{% url 'login' %}" class="auth-link">Sign in here</a></p>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const userTypeOptions = document.querySelectorAll('.user-type-option');
+        const dealerFields = document.getElementById('dealer-fields');
+        
+        function toggleDealerFields() {
+            const selectedType = document.querySelector('input[name="user_type"]:checked');
+            if (selectedType && selectedType.value === 'dealer') {
+                dealerFields.style.display = 'block';
+                // Make dealer fields required
+                document.getElementById('{{ form.business_name.id_for_label }}').required = true;
+            } else {
+                dealerFields.style.display = 'none';
+                // Remove required attribute
+                document.getElementById('{{ form.business_name.id_for_label }}').required = false;
+            }
+        }
+        
+        // Initial toggle
+        toggleDealerFields();
+        
+        // Add event listeners to user type options
+        userTypeOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                setTimeout(toggleDealerFields, 0);
+            });
+        });
+    });
+</script>
+{% endblock %}
