@@ -44,9 +44,9 @@ urlpatterns = [
     path('inquiry/<int:car_id>/', views.send_inquiry, name='send_inquiry'),
 
     # Authentication URLs
-    path('login/', views.LoginView.as_view(), name='login'),
-    path('register/', views.RegisterView.as_view(), name='register'),
-    path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('login/', views.login_view, name='login'),
+    path('register/', views.register_view, name='register'),
+    path('logout/', views.logout_view, name='logout'),
     path('profile/', views.profile_view, name='profile'),
     
 

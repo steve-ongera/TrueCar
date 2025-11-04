@@ -1,140 +1,152 @@
 {% extends 'auth_base.html' %}
+{% load static %}
 
 {% block title %}Register - TrueCar{% endblock %}
-
-{% block auth_subtitle %}Create your TrueCar account{% endblock %}
+{% block auth_subtitle %}Start Your Journey{% endblock %}
 
 {% block auth_content %}
-<h2 class="auth-title">Join TrueCar</h2>
-<p class="auth-description">Create an account to start buying or selling cars.</p>
+<h2 class="auth-title">Create Account</h2>
+<p class="auth-description">Join TrueCar and find your perfect vehicle</p>
 
 {% if messages %}
     {% for message in messages %}
-        <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
-            {{ message }}
-        </div>
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
     {% endfor %}
 {% endif %}
 
-<form method="post" novalidate>
+<form method="post" action="{% url 'register' %}" id="registerForm">
     {% csrf_token %}
-    
-    {% if form.non_field_errors %}
-        <div class="alert alert-error">
-            {% for error in form.non_field_errors %}
-                {{ error }}
-            {% endfor %}
-        </div>
-    {% endif %}
     
     <!-- User Type Selection -->
     <div class="form-group">
-        <label class="form-label">I want to:</label>
+        <label class="form-label">I am a:</label>
         <div class="user-type-selector">
-            {% for choice in form.user_type %}
-                <div class="user-type-option {% if choice.data.value == form.user_type.value %}selected{% endif %}">
-                    {{ choice.tag }}
-                    <label class="user-type-label" for="{{ choice.id_for_label }}">
-                        {{ choice.choice_label }}
-                    </label>
-                </div>
+            {% for value, label in form.user_type.field.choices %}
+            <div class="user-type-option" data-type="{{ value }}">
+                <input type="radio" name="user_type" value="{{ value }}" id="type_{{ value }}" 
+                       {% if form.user_type.value == value %}checked{% endif %}>
+                <label for="type_{{ value }}" class="user-type-label">
+                    <i class="bi bi-{% if value == 'buyer' %}person{% elif value == 'seller' %}tag{% else %}building{% endif %}"></i>
+                    <div>{{ label }}</div>
+                </label>
+            </div>
             {% endfor %}
         </div>
-        {% for error in form.user_type.errors %}
-            <div class="invalid-feedback" style="display: block;">{{ error }}</div>
-        {% endfor %}
-    </div>
-    
-    <!-- Dealer Fields (initially hidden) -->
-    <div id="dealer-fields" style="display: none;">
-        <div class="form-group">
-            <label class="form-label" for="{{ form.business_name.id_for_label }}">Business Name</label>
-            <input type="text" 
-                   name="business_name" 
-                   id="{{ form.business_name.id_for_label }}"
-                   class="form-control {% if form.business_name.errors %}is-invalid{% endif %}"
-                   placeholder="Enter your business name"
-                   value="{{ form.business_name.value|default:'' }}">
-            {% for error in form.business_name.errors %}
-                <div class="invalid-feedback">{{ error }}</div>
-            {% endfor %}
-        </div>
+        {% if form.user_type.errors %}
+            <div class="invalid-feedback">{{ form.user_type.errors.0 }}</div>
+        {% endif %}
     </div>
     
     <!-- Basic Information -->
-    <div class="form-group">
-        <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
-        <input type="text" 
-               name="username" 
-               id="{{ form.username.id_for_label }}"
-               class="form-control {% if form.username.errors %}is-invalid{% endif %}"
-               placeholder="Choose a username"
-               value="{{ form.username.value|default:'' }}"
-               required>
-        {% for error in form.username.errors %}
-            <div class="invalid-feedback">{{ error }}</div>
-        {% endfor %}
-    </div>
-    
-    <div class="form-group">
-        <label class="form-label" for="{{ form.email.id_for_label }}">Email Address</label>
-        <input type="email" 
-               name="email" 
-               id="{{ form.email.id_for_label }}"
-               class="form-control {% if form.email.errors %}is-invalid{% endif %}"
-               placeholder="Enter your email"
-               value="{{ form.email.value|default:'' }}"
-               required>
-        {% for error in form.email.errors %}
-            <div class="invalid-feedback">{{ error }}</div>
-        {% endfor %}
-    </div>
-    
-    <div class="form-group">
-        <label class="form-label" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
-        <input type="tel" 
-               name="phone_number" 
-               id="{{ form.phone_number.id_for_label }}"
-               class="form-control {% if form.phone_number.errors %}is-invalid{% endif %}"
-               placeholder="e.g., +254712345678"
-               value="{{ form.phone_number.value|default:'' }}"
-               required>
-        {% for error in form.phone_number.errors %}
-            <div class="invalid-feedback">{{ error }}</div>
-        {% endfor %}
-    </div>
-    
-    <!-- Password Fields -->
-    <div class="form-group">
-        <label class="form-label" for="{{ form.password1.id_for_label }}">Password</label>
-        <div class="password-toggle">
-            <input type="password" 
-                   name="password1" 
-                   id="{{ form.password1.id_for_label }}"
-                   class="form-control {% if form.password1.errors %}is-invalid{% endif %}"
-                   placeholder="Create a password"
-                   required>
-            <i class="bi bi-eye-slash password-toggle-icon"></i>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name</label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                    <div class="invalid-feedback">{{ form.first_name.errors.0 }}</div>
+                {% endif %}
+            </div>
         </div>
-        {% for error in form.password1.errors %}
-            <div class="invalid-feedback">{{ error }}</div>
-        {% endfor %}
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name</label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                    <div class="invalid-feedback">{{ form.last_name.errors.0 }}</div>
+                {% endif %}
+            </div>
+        </div>
     </div>
     
     <div class="form-group">
-        <label class="form-label" for="{{ form.password2.id_for_label }}">Confirm Password</label>
-        <div class="password-toggle">
-            <input type="password" 
-                   name="password2" 
-                   id="{{ form.password2.id_for_label }}"
-                   class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
-                   placeholder="Confirm your password"
-                   required>
-            <i class="bi bi-eye-slash password-toggle-icon"></i>
+        <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+            <div class="invalid-feedback">{{ form.username.errors.0 }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+        {{ form.email }}
+        {% if form.email.errors %}
+            <div class="invalid-feedback">{{ form.email.errors.0 }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number</label>
+        {{ form.phone_number }}
+        {% if form.phone_number.errors %}
+            <div class="invalid-feedback">{{ form.phone_number.errors.0 }}</div>
+        {% endif %}
+    </div>
+    
+    <!-- Dealer-specific fields -->
+    <div id="dealerFields" style="display: none;">
+        <div class="form-group">
+            <label for="{{ form.business_name.id_for_label }}" class="form-label">Business Name *</label>
+            {{ form.business_name }}
+            {% if form.business_name.errors %}
+                <div class="invalid-feedback">{{ form.business_name.errors.0 }}</div>
+            {% endif %}
         </div>
-        {% for error in form.password2.errors %}
-            <div class="invalid-feedback">{{ error }}</div>
-        {% endfor %}
+        
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}" class="form-label">Business Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div class="invalid-feedback">{{ form.description.errors.0 }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label for="{{ form.address.id_for_label }}" class="form-label">Address *</label>
+                    {{ form.address }}
+                    {% if form.address.errors %}
+                        <div class="invalid-feedback">{{ form.address.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="{{ form.city.id_for_label }}" class="form-label">City *</label>
+                    {{ form.city }}
+                    {% if form.city.errors %}
+                        <div class="invalid-feedback">{{ form.city.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Password fields -->
+    <div class="form-group">
+        <label for="{{ form.password1.id_for_label }}" class="form-label">Password</label>
+        <div class="password-toggle">
+            {{ form.password1 }}
+            <i class="bi bi-eye password-toggle-icon"></i>
+        </div>
+        <small class="form-text text-muted">{{ form.password1.help_text }}</small>
+        {% if form.password1.errors %}
+            <div class="invalid-feedback">{{ form.password1.errors.0 }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password</label>
+        <div class="password-toggle">
+            {{ form.password2 }}
+            <i class="bi bi-eye password-toggle-icon"></i>
+        </div>
+        {% if form.password2.errors %}
+            <div class="invalid-feedback">{{ form.password2.errors.0 }}</div>
+        {% endif %}
     </div>
     
     <button type="submit" class="btn-auth">
@@ -143,36 +155,41 @@
 </form>
 
 <div class="auth-footer">
-    <p>Already have an account? <a href="{% url 'login' %}" class="auth-link">Sign in here</a></p>
+    <p>Already have an account? <a href="{% url 'login' %}" class="auth-link">Sign In</a></p>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const userTypeOptions = document.querySelectorAll('.user-type-option');
-        const dealerFields = document.getElementById('dealer-fields');
-        
-        function toggleDealerFields() {
-            const selectedType = document.querySelector('input[name="user_type"]:checked');
-            if (selectedType && selectedType.value === 'dealer') {
-                dealerFields.style.display = 'block';
-                // Make dealer fields required
-                document.getElementById('{{ form.business_name.id_for_label }}').required = true;
-            } else {
-                dealerFields.style.display = 'none';
-                // Remove required attribute
-                document.getElementById('{{ form.business_name.id_for_label }}').required = false;
-            }
-        }
-        
-        // Initial toggle
-        toggleDealerFields();
-        
-        // Add event listeners to user type options
-        userTypeOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                setTimeout(toggleDealerFields, 0);
-            });
+document.addEventListener('DOMContentLoaded', function() {
+    const dealerFields = document.getElementById('dealerFields');
+    const userTypeOptions = document.querySelectorAll('.user-type-option');
+    
+    // Function to toggle dealer fields
+    function toggleDealerFields() {
+        const selectedType = document.querySelector('input[name="user_type"]:checked').value;
+        dealerFields.style.display = selectedType === 'dealer' ? 'block' : 'none';
+    }
+    
+    // Set initial state
+    toggleDealerFields();
+    
+    // Add click handlers
+    userTypeOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const radio = this.querySelector('input[type="radio"]');
+            radio.checked = true;
+            
+            userTypeOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            toggleDealerFields();
         });
     });
+    
+    // Mark initially selected option
+    const checkedRadio = document.querySelector('input[name="user_type"]:checked');
+    if (checkedRadio) {
+        checkedRadio.closest('.user-type-option').classList.add('selected');
+    }
+});
 </script>
 {% endblock %}
